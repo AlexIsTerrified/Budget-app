@@ -16,9 +16,10 @@ position:sticky;top:0;z-index:5}
 .dashboard .head{height:160px;padding:20px;box-sizing:border-box}
 .dashboard .charts{flex:1;display:flex;padding:10px;box-sizing:border-box;min-height:300px;justify-content:space-evenly}
 .dashboard .charts .pie-chart{min-height:300px;min-width:300px;max-width:450px;flex:3;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;
-box-sizing:border-box;background:#f3f3f3}
+box-sizing:border-box;background:#f3f3f3;display:flex;padding:10px}
+.dashboard .charts .pie-chart .pie{flex:1;width:100%;height:100%}
 .dashboard .charts .graph{min-height:300px;min-width:450px;max-width:525px;flex:4;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;
-box-sizing:border-box;background:#f3f3f3}
+box-sizing:border-box;background:#f3f3f3;padding:10px}
 
 .dashboard .lists{flex:1;display:flex;min-height:300px;justify-content:space-evenly;padding:10px;box-sizing:border-box}
 .dashboard .lists .expenses{flex:4;background:#f3f3f3;min-width:400px;max-width:400px;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;}
@@ -45,8 +46,8 @@ justify-content:space-between;container-type: inline-size;}
 
 @container (max-width:840px){
 	.main .dashboard .charts{flex-direction:column;justify-content:initial}
-	.dashboard .charts .pie-chart{min-width:initial;margin:0}
-	.dashboard .charts .graph{align-self:flex-end;min-width:initial;width:100%;margin:0;margin-top:20px}
+	.dashboard .charts .pie-chart{min-width:initial;margin:0;min-height:initial;height:300px;max-height:80vw}
+	.dashboard .charts .graph{align-self:flex-end;min-width:initial;width:100%;margin:0;margin-top:20px;min-height:initial;height:300px;max-height:67vw}
 	.dashboard .lists{flex-direction:column;justify-content:initial}
 	.dashboard .lists .expenses{flex:1;min-width:initial;max-width:initial}
 	.dashboard .lists .income{flex:1;min-width:initial;max-width:initial}
