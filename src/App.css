@@ -26,21 +26,33 @@ box-sizing:border-box;background:#f3f3f3;padding:10px}
 .dashboard .lists .income{flex:3;background:#f3f3f3;min-width:300px;max-width:400px;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;}
 .dashboard .lists .extra{flex:1;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;}
 
-.start-form{width:100%;height:100vh;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;
-transition:.3s}
+.start-form{width:100%;height:100vh;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;transition:.3s}
 .next{transform:translateY(-100%)}
 .start-form .income{width:100%;min-height:100vh;display:flex;flex-direction:columns;justify-content:Center;align-items:center;}
 .start-form .income .page{max-width:800px;width:100%;min-height:360px;background:#f3f3f3;box-shadow:1px 1px 10px #0003;border-radius:15px;padding:28px;
-box-sizing:border-box;display:flex;flex-direction:column;max-height:100%;}
-.start-form .income .form{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;box-sizing:border-box;flex-wrap:wrap}
-.start-form .income .form .row{display:flex;flex-direction:column;padding:10px;box-sizing: border-box; max-width: 160px;}
+box-sizing:border-box;display:flex;flex-direction:column;max-height:100%;overflow:overlay}
+.start-form .income .form{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:10px 20px;box-sizing:border-box;
+flex-wrap:wrap}
+.start-form .income .form .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;width:100%}
+.start-form .income .form .row{flex:1;display:flex;flex-direction:column;padding:10px;box-sizing: border-box; max-width: 160px;min-width:100px}
 .start-form .income .form .row .label{font-size:.75rem;color:rgba(0,0,0,0.6);font-weight:400}
-.start-form .income .form .row .center{align-self:center}
+.start-form .income .form .center{align-items:Center}
+.start-form .income .form .expand{flex:initial;min-width:initial}
+.start-form .income .form .bottom{display:flex;align-self:end;align-items:Center;flex-direction: column;}
+.start-form .income .form .bottom .item{display:flex;align-items:Center;flex-wrap:wrap;}
+.start-form .income .form .bottom .row{max-width:120px;}
+.start-form .income .form .bottom .expand{padding:0}
 .start-form .income .list{flex:1;padding:20px 10px;border-radius:15px;background:#00000018;display:grid;grid-template-columns:auto auto auto auto;
 justify-content:space-between;container-type: inline-size;}
+.start-form .expense .list{grid-template-columns:auto auto auto auto auto;}
 .start-form .income .list .label{padding:4px;font-size:1rem;color:rgba(0,0,0,0.6);font-weight:400}
-.start-form .income .list .column{padding:4px;max-width:160px}
-.start-form .income .list .column:nth-child(4n){padding-bottom:20px}
+.start-form .income .list .column{padding:4px;max-width:160px;padding-top:20px;display:flex;align-items:Center;justify-content:center}
+.start-form .expense .list .expanded{grid-column-start:3;grid-column-end:6;padding:10px;padding-top:0;border:1px solid #0005;border-radius:15px}
+.start-form .expense .list .expanded .item{display:flex;justify-content:Center;align-items:Center}
+.start-form .expense .list .expanded .item .row{flex:1;display:flex;flex-direction:column;padding:10px;box-sizing: border-box; max-width:120px;min-width:100px}
+.start-form .expense .list .expanded .item .label{font-size:.75rem;color:rgba(0,0,0,0.6);font-weight:400}
+.start-form .expense .list .expanded .item .center{align-items:Center}
+.start-form .expense .list .expanded .item .expand{flex:initial;min-width:initial}
 .start-form .income .end{display:flex;justify-content:end;padding-top:20px}
 
 
@@ -55,11 +67,23 @@ justify-content:space-between;container-type: inline-size;}
 }
 
 @container (max-width:400px){
-		.start-form .income .list{grid-template-columns:auto auto auto; }
+	.start-form .income .list{grid-template-columns:auto auto auto; }
 	.start-form .income .list *:nth-child(4n-3){grid-column-start:1;}
 	.start-form .income .list *:nth-child(4n-2){grid-column-start:2;}
 	.start-form .income .list *:nth-child(4n-1){grid-column-start:3;}
 	.start-form .income .list *:nth-child(4n){grid-column-start:1;}
+	
+	.start-form .expense .list .expanded{grid-column-start:1;grid-column-end:4}
+	.start-form .expense .list .column:nth-child(5n-4){grid-column-start:1;}
+	.start-form .expense .list .column:nth-child(5n-3){grid-column-start:2;}
+	.start-form .expense .list .column:nth-child(5n-2){grid-column-start:3;}
+	.start-form .expense .list .column:nth-child(5n-1){grid-column-start:1;}
+	.start-form .expense .list .column:nth-child(5n){grid-column-start:3;}
+	.start-form .expense .list .label:nth-child(5n-4){grid-column-start:1;}
+	.start-form .expense .list .label:nth-child(5n-3){grid-column-start:2;}
+	.start-form .expense .list .label:nth-child(5n-2){grid-column-start:3;}
+	.start-form .expense .list .label:nth-child(5n-1){grid-column-start:1;}
+	.start-form .expense .list .label:nth-child(5n){grid-column-start:3;}
 }
 
 

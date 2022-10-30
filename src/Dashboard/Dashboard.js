@@ -1,8 +1,10 @@
+import {useState} from 'react'
 import Chart from 'react-apexcharts'
-import {NewIncome, NewExpenses} from './newUser'
+import NewIncome from './newIncome'
+import NewExpenses from './newExpense'
+import {getTotal,donutInputs}from '../Functions/calculations'
 
 export default function Dashboard({income,expenses}){
-
 	
 	if(income == false || expenses == false || income == null || expenses == null)return (
 		<div className={"start-form "+(income != false ? "next" : "")}>
@@ -10,11 +12,15 @@ export default function Dashboard({income,expenses}){
 			<NewExpenses/>
 		</div>
 	)
+	
+	const incomeTotal = getTotal(income)
+	const donut = donutInputs(expenses,incomeTotal)
+	
+	const donutinputs = donutInputs(expenses,)
 
 	const donutOptions = {
-        labels: ['A', 'B', 'C', 'D', 'E'],
+        labels:donut.labels,
       }
-	const donutSeries = [44, 55, 41, 17, 15]
 	
 	const areaOptions = {
 					xaxis: {
@@ -38,7 +44,7 @@ export default function Dashboard({income,expenses}){
 			<div className="charts">
 				<div className="pie-chart">
 					<div className="pie">
-						<Chart options={donutOptions} series={donutSeries} type="donut" />
+						<Chart options={donutOptions} series={donut.series} type="donut" />
 					</div>
 				</div>
 				<div className="graph">
