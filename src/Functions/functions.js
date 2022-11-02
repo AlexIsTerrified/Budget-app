@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+/*import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
@@ -21,7 +21,7 @@ const db = getFirestore(app);
 function createUser(email,password){
 
 }
-
+*/
 // takes in edited income data as a javascript object and updates it in local storage
 export function editIncome(data){
 	var type = false

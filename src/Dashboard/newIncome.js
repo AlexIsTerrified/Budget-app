@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
-import {TextField,InputAdornment,FormControlLabel,Switch,Button,Select,MenuItem} from '@mui/material';
-import {editIncome,editExpenses} from '../Functions/functions'
+import {TextField,InputAdornment,Switch,IconButton,Button} from '@mui/material';
+import {AddCircle,RemoveCircle} from '@mui/icons-material';
+import {editIncome} from '../Functions/functions'
 
 export default function NewIncome(){
 	const [incomeList,setIncomeList] = useState([])
@@ -72,7 +73,7 @@ export default function NewIncome(){
 					}} />
 				</div>
 				<div className="column">
-					<Button size="small" variant="contained" color="error" onClick={()=>handleRemove(i)}>Remove</Button>
+					<IconButton size="small" variant="contained" color="error" onClick={()=>handleRemove(i)}><RemoveCircle/></IconButton>
 				</div>
 				</>
 		)
@@ -88,8 +89,8 @@ export default function NewIncome(){
 						<span className="label">Name</span>
 						<TextField id="name" onChange={handleIncome} defaultValue="Salary" size="large" variant="standard" required/>
 					</div>
-					<div className="row">
-					<span className="label center">Fixed</span>
+					<div className="row center">
+					<span className="label">Fixed</span>
 						<Switch id="fixed" onChange={handleIncome} color="primary" checked={newIncome.fixed} required/>
 					</div>
 					<div className="row">
@@ -99,15 +100,17 @@ export default function NewIncome(){
 							startAdornment: <InputAdornment position="start">$</InputAdornment>,
 						  }} />
 					  </div>
-					<div className="row">
-						<Button size="small" variant="contained" onClick={handleAddIncome} >Add</Button>
+					<div className="row expand">
+						<IconButton size="small" variant="contained" color="primary"  onClick={handleAddIncome} disabled={newIncome.name == '' || newIncome.amount == ''}>
+							<AddCircle/>
+						</IconButton>
 					</div>
 				</div>
 			</div>
 			<div className="list">
-					<span className="label">Name</span>
+					<span className="label  left">Name</span>
 					<span className="label">Fixed</span>
-					<span className="label">Amount</span>
+					<span className="label left">Amount</span>
 					<span className="label"></span>
 				{incomeList.map((income,i)=>{
 					return (

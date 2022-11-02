@@ -1,7 +1,7 @@
-import {useEffect, useState} from 'react'
-import {TextField,InputAdornment,FormControlLabel,Switch,Button,IconButton,Select,MenuItem} from '@mui/material';
-import {Add,AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
-import {editIncome,editExpenses} from '../Functions/functions'
+import { useState} from 'react'
+import {TextField,InputAdornment,Switch,Button,IconButton,Select,MenuItem} from '@mui/material';
+import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
+import {editExpenses} from '../Functions/functions'
 import {getTotal}from '../Functions/calculations'
 
 export default function NewExpenses(){
@@ -18,23 +18,19 @@ export default function NewExpenses(){
 	}
 
 	const handleAddExpenses = (e) => {
-		if(newExpense.name !== null && newExpense.amount !== null && newExpense.fixed !== null){
-			const n_expenses = expensesList;
-			let date = new Date()
-			date  = date.valueOf()
-			if(typeof newExpense.amount === 'object'){
-				const n_expanded = expanded
-				n_expanded[date] = false
-				setExpanded(n_expanded)
-			}
-			
-			n_expenses.push({...newExpense,date:date})
-			setexpensesList(n_expenses)
-			setNewExpenses({...newExpense,fixed:true})
-			setLength(n_expenses.length)
-		}else{
-			
+		const n_expenses = expensesList;
+		let date = new Date()
+		date  = date.valueOf()
+		if(typeof newExpense.amount === 'object'){
+			const n_expanded = expanded
+			n_expanded[date] = false
+			setExpanded(n_expanded)
 		}
+		
+		n_expenses.push({...newExpense,date:date})
+		setexpensesList(n_expenses)
+		setNewExpenses({...newExpense,fixed:true})
+		setLength(n_expenses.length)
 	}
 	
 	const handleChange = (e,id,i) => {
@@ -291,7 +287,9 @@ export default function NewExpenses(){
 						}
 					</div>
 					<div className="row expand">
-						<IconButton variant="contained" color="primary" onClick={handleAddExpenses}><AddCircle/></IconButton>
+						<IconButton variant="contained" color="primary" onClick={handleAddExpenses} disabled={newExpense.name == '' || newExpense.amount == ''}>
+							<AddCircle/>
+						</IconButton>
 					</div>
 				</div>
 				<div className="bottom">
@@ -304,10 +302,10 @@ export default function NewExpenses(){
 				</div>
 			</div>
 			<div className="list">
-					<span className="label">Name</span>
+					<span className="label  left">Name</span>
 					<span className="label">Fixed</span>
 					<span className="label">Priority</span>
-					<span className="label">Amount</span>
+					<span className="label  left">Amount</span>
 					<span className="label"></span>
 			{expensesList.map((income,i)=>{
 					return (
