@@ -23,6 +23,7 @@ export default function Dashboard({income,expenses}){
 		chart:{
 			foreColor:theme.palette.mode === "dark" ? '#f3f3f3d0' : '#434343d0' ,
 		},
+		colors: ['#008FFB',	'#00E396',	'#FEB019',	'#FF4560',	'#775DD0', '#2B908F',	'#F9A3A4',	'#90EE7E'	,'#FA4443'	,'#69D2E7'],
 		stroke:{
 			show:false
 		},
@@ -60,6 +61,7 @@ export default function Dashboard({income,expenses}){
 					xaxis: {
 					  categories: area.xaxis
 					},
+					colors:['#008FFB','#FF4560'],
 					chart:{
 						foreColor: theme.palette.mode === "dark" ? '#f3f3f3d0' : '#434343d0',
 						toolbar:{
