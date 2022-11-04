@@ -25,31 +25,32 @@ function createUser(email,password){
 
 export function darkMode(){
 	const dark = localStorage.getItem("darkMode")
-	if(dark){
+	if(JSON.parse(dark)){
 		return true
 	}else{
-		return window.matchMedia('(prefers-color-scheme: dark)').matches
+		return false
 	}
+}
+
+export function setDarkMode(d){
+	localStorage.setItem("darkMode",JSON.stringify(d))
+	document.getElementById("hidden").click()
 }
 
 // takes in edited income data as a javascript object and updates it in local storage
 export function editIncome(data){
-	var type = false
-	if(typeof data !== "object")return type;
-	
-	data.forEach((item)=>{
-		if(typeof item !== "object")type=false;
-		if(typeof item.name !== "string")type="name";
-		if(typeof item.amount !== "number" && data.amount >= 0)type="amount";
-		if(typeof item.fixed !== "boolean"){
-			type="fixed";
-		}else if(typeof item.date !== "number")type="date";
-	})
-	
 	const income = JSON.stringify(data)
-	localStorage.setItem("local_income",income);
+	const old_income = localStorage.getItem("local_income") || ""
 	
-	return true
+	if(income.normalize() !==  old_income.normalize()){
+		const income = JSON.stringify(data)
+		localStorage.setItem("local_income",income);
+		document.getElementById("hidden").click()
+		
+		return true
+	}else{
+		return false
+	}
 }
 
 // fetches income data as javascript object from local storage
@@ -64,31 +65,25 @@ export function fetchIncome(){
 
 // takes in edited expenses data as a javascript object and updates it in local storage
 export function editExpenses(data){
-	var type = false
-	if(typeof data !== "object")return type;
-	
-	data.forEach((item)=>{
-		if(typeof item !== "object")type = false;
-		if(typeof item.name !== "string")type = "name";
-		if(typeof item.amount !== "number" && data.amount >= 0)type = "amount";
-		if(typeof item.priority !== "number")type = "priority";
-		if(typeof item.fixed !== "boolean"){
-			type = "fixed";
-		}else if(typeof item.date !== "number")type = "date";
-	})
-	
-	
 	const income = JSON.stringify(data)
-	localStorage.setItem("local_expenses",income);
+	const old_expenses = localStorage.getItem("local_expenses") || ""
 	
-	return true
+	if(income.normalize() !==  old_expenses.normalize()){
+		
+		localStorage.setItem("local_expenses",income);
+		document.getElementById("hidden").click()
+		
+		return true
+	}else{
+		return false
+	}
 }
 // fetches expenses data as javascript object from local storage
 export function fetchExpenses(){
-	const data = localStorage.getItem("local_income");
+	const data = localStorage.getItem("local_expenses");
 	
 	if(data == null)return false
 	
-	return JSON.parse(localStorage.getItem("local_expenses"))
+	return JSON.parse(data)
 }
 

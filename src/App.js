@@ -25,20 +25,18 @@ function App() {
 	const updateState = () => {
 		setIncome(fetchIncome)
 		setExpenses(fetchExpenses)
+		setDarkmode(darkMode())
+		console.log(darkMode())
 	}
 	
 	useEffect(()=>{
-		document.addEventListener('readystatechange',e=>{
-			if(e.target.readyState === "complete"){
-				if(darkmode){
-					const body = document.body
-					body.classList.add("dark")
-				}else{
-					const body = document.body
-					body.classList.remove("dark")
-				}
-			}
-		})
+		if(darkmode){
+			const body = document.body
+			body.classList.add("dark")
+		}else{
+			const body = document.body
+			body.classList.remove("dark")
+		}
 	})
 	
   return (
@@ -47,7 +45,7 @@ function App() {
 		<Nav/>
 		<div className="main">
 			<Routes>
-				<Route path="/" element={<Dashboard income={income} expenses={expenses}/>}/>
+				<Route path="/" element={<Dashboard income={income} expenses={expenses} theme={darkmode}/>}/>
 				<Route path="/income" element={<Income/>}/>
 				<Route path="/expenses" element={<Expenses/>}/>
 			</Routes>

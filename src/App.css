@@ -17,13 +17,19 @@ body{
 
 body{margin:0;padding:0;width:100%;min-height:100vh;background:var(--background);color:var(--color);
 font-family: 'Roboto', sans-serif;}
+a{text-decoration:none;color:inherit}
 
 #root{display:flex;}
 
 #hidden{display:none}
 
-.nav{width:240px;height:100vh;box-sizing:border-box;padding:20px 10px;box-shadow: -1px 1px 10px #0003;background:var(--accent-color);
-position:sticky;top:0;z-index:5}
+.nav{width:200px;height:100vh;box-sizing:border-box;padding:20px 0;box-shadow: -1px 1px 10px #0003;background:var(--accent-color);
+position:sticky;top:0;z-index:5;display:flex;flex-direction:column;justify-content:space-between;}
+.nav .start{display:flex;flex-direction:column;padding:0 10px;}
+.nav .start .item{height:30px;display:flex;align-items:center;padding:5px;margin:5px 0}
+.nav .start .item svg{font-size:30px}
+.nav .start .item b{padding:5px;font-size:.8rem}
+.nav .end{padding:10px}
 
 .main{flex:1;container-type: inline-size;display:flex;flex-direction:column;justify-content:Center;align-items:center;} 
 
@@ -35,6 +41,7 @@ box-sizing:border-box;background:var(--box-color);display:flex;padding:10px}
 .dashboard .charts .pie-chart .pie{flex:1;width:100%;height:100%}
 .dashboard .charts .graph{max-height:300px;max-width:450px;flex:4;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;
 box-sizing:border-box;background:var(--box-color);padding:10px}
+.dashboard .charts .graph .apexcharts-canvas{color:rgba(0,0,0,0.8)}
 
 .dashboard .lists{display:flex;padding:0 10px;box-sizing:border-box}
 .dashboard .lists .income{flex:3;background:var(--box-color);width:100%;max-width:500px;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;
@@ -139,7 +146,9 @@ justify-content:space-between;}
 }
 
 @media only screen and (max-width: 1040px){
-	.nav{width:80px;}
+	.nav{width:60px}
+	.nav .start{padding:0 10px}
+	.nav .start .item b{display:none}
 }
 
 @media only screen and (max-width: 640px){

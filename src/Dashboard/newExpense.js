@@ -96,7 +96,6 @@ export default function NewExpenses(){
 	
 	const handleSubmit = () => {
 		editExpenses(expensesList);
-		document.getElementById("hidden").click()
 	}
 	
 	const Expanded = (amount,i) => {
@@ -179,21 +178,21 @@ export default function NewExpenses(){
 	const item = (expense,i) => {
 		
 		return (
-		<div className={"row "+(i%2===0 ? "" : "even")}>
-			<div className="column" key={i+"name"+expense.date}>
+		<div className={"row "+(i%2===0 ? "" : "even")} key={i+""+expense.date}>
+			<div className="column" >
 				<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={expense.name} size="large" variant="standard" required/>
 			</div>
-			<div className="column" key={i+"fixed"+expense.date}>
+			<div className="column">
 				<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={expense.fixed} required/>
 			</div>
-			<div className="column" key={i+"priority"+expense.date}>
+			<div className="column">
 				  <Select defaultValue={expense.priority} variant="standard" onChange={(e)=>handleChange(e,"priority",i)}>
 					<MenuItem value="2">High</MenuItem>
 					<MenuItem value="1">Medium</MenuItem>
 					<MenuItem value="0">Low</MenuItem>
 				  </Select>
 			</div>
-			<div className="column" key={i+"amount"+expense.date}>
+			<div className="column">
 				{typeof expense.amount !== "object" ?
 				<>
 					<IconButton size="small" onClick={()=>editExpand(i)}>
@@ -211,7 +210,7 @@ export default function NewExpenses(){
 					<span>{getTotal(expense.amount)}</span>
 				</>}
 			</div>
-			<div className="column min" key={i+"remove"+expense.date}>
+			<div className="column min">
 				<IconButton size="small" variant="contained" color="error" onClick={()=>handleRemove(i)}><RemoveCircle/></IconButton>
 			</div>
 			{(typeof expense.amount === 'object') && expanded[expense.date] ?

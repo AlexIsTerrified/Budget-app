@@ -4,8 +4,7 @@ import NewIncome from './newIncome'
 import NewExpenses from './newExpense'
 import {getTotal,sortByAmount,donutInputs,areaInputs}from '../Functions/calculations'
 
-export default function Dashboard({income,expenses}){
-	const theme = useTheme();
+export default function Dashboard({income,expenses,theme}){
 	
 	if(income == false || expenses == false || income == null || expenses == null)return (
 		<div className={"start-form "+(income != false ? "next" : "")}>
@@ -21,7 +20,7 @@ export default function Dashboard({income,expenses}){
 	const donutOptions = {
         labels:donut.labels,
 		chart:{
-			foreColor:theme.palette.mode === "dark" ? '#f3f3f3d0' : '#434343d0' ,
+			foreColor:theme === true ? '#f3f3f3d0' : '#434343d0' ,
 		},
 		colors: ['#008FFB',	'#00E396',	'#FEB019',	'#FF4560',	'#775DD0', '#2B908F',	'#F9A3A4',	'#90EE7E'	,'#FA4443'	,'#69D2E7'],
 		stroke:{
@@ -63,7 +62,7 @@ export default function Dashboard({income,expenses}){
 					},
 					colors:['#008FFB','#FF4560'],
 					chart:{
-						foreColor: theme.palette.mode === "dark" ? '#f3f3f3d0' : '#434343d0',
+						foreColor: theme === true ? '#f3f3f3d0' : '#434343d0',
 						toolbar:{
 							tools:{download:true,selection:false,zoom:false,zoomin:false,zoomout:false,pan:false,reset:false}},
 							selection:{enabled:false}
