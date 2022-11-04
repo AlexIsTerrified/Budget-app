@@ -22,6 +22,16 @@ function createUser(email,password){
 
 }
 */
+
+export function darkMode(){
+	const dark = localStorage.getItem("darkMode")
+	if(dark){
+		return true
+	}else{
+		return window.matchMedia('(prefers-color-scheme: dark)').matches
+	}
+}
+
 // takes in edited income data as a javascript object and updates it in local storage
 export function editIncome(data){
 	var type = false

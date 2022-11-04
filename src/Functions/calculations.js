@@ -19,6 +19,18 @@ export function getTotal(data){
 	return total
 }
 
+export function sortByAmount(data,d=false){
+	return data.sort((a,b)=>{
+		const aN = typeof a.amount === "object" ? getTotal(a.amount) : a.amount
+		const bN = typeof b.amount === "object" ? getTotal(b.amount) : b.amount
+		if(d){
+			return aN-bN
+		}else{
+			return bN-aN
+		}
+	})
+}
+
 export function donutInputs(expenses,incomeTotal){
 	let total = 0;
 	const labels = []

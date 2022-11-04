@@ -1,5 +1,5 @@
 import { useState} from 'react'
-import {TextField,InputAdornment,Switch,Button,IconButton,Select,MenuItem} from '@mui/material';
+import {TextField,InputAdornment,InputLabel,Switch,Button,IconButton,Select,MenuItem,FormControl} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
 import {editExpenses} from '../Functions/functions'
 import {getTotal}from '../Functions/calculations'
@@ -178,7 +178,8 @@ export default function NewExpenses(){
 	
 	const item = (expense,i) => {
 		
-		return (<>
+		return (
+		<div className={"row "+(i%2===0 ? "" : "even")}>
 			<div className="column" key={i+"name"+expense.date}>
 				<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={expense.name} size="large" variant="standard" required/>
 			</div>
@@ -195,7 +196,7 @@ export default function NewExpenses(){
 			<div className="column" key={i+"amount"+expense.date}>
 				{typeof expense.amount !== "object" ?
 				<>
-					<IconButton size="small" color="primary" onClick={()=>editExpand(i)}>
+					<IconButton size="small" onClick={()=>editExpand(i)}>
 						<ExpandMore/>
 					</IconButton>
 					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} defaultValue={expense.amount} type="number" variant="standard" required
@@ -210,7 +211,7 @@ export default function NewExpenses(){
 					<span>{getTotal(expense.amount)}</span>
 				</>}
 			</div>
-			<div className="column" key={i+"remove"+expense.date}>
+			<div className="column min" key={i+"remove"+expense.date}>
 				<IconButton size="small" variant="contained" color="error" onClick={()=>handleRemove(i)}><RemoveCircle/></IconButton>
 			</div>
 			{(typeof expense.amount === 'object') && expanded[expense.date] ?
@@ -242,7 +243,7 @@ export default function NewExpenses(){
 			})}
 			</div> 
 			: ""}
-			</>
+			</div>
 		)
 	}
 	
@@ -253,20 +254,23 @@ export default function NewExpenses(){
 			<div className="form">
 				<div className="top">
 					<div className="row">
-						<span className="label">Name</span>
-						<TextField onChange={(e)=>handleExpenses(e,"name")} defaultValue="Rent" size="large" variant="standard" required/>
+						<TextField onChange={(e)=>handleExpenses(e,"name")} label="Name" defaultValue="Rent" size="small" variant="outlined" required/>
 					</div>
 					<div className="row center">
 						<span className="label center">Fixed</span>
 						<Switch onChange={(e)=>handleExpenses(e,"fixed")} color="primary" checked={newExpense.fixed} required/>
 					</div>
 					<div className="row">
-						<span className="label">Priority</span>
-						  <Select defaultValue="2" variant="standard" onChange={(e)=>handleExpenses(e,"priority")}>
-							<MenuItem value="2">High</MenuItem>
-							<MenuItem value="1">Medium</MenuItem>
-							<MenuItem value="0">Low</MenuItem>
-						  </Select>
+							<FormControl>
+								<InputLabel shrink htmlFor="select-multiple-native">
+								  Priority
+								</InputLabel>
+							  <Select defaultValue="2"onChange={(e)=>handleExpenses(e,"priority")} label="Priority" size="small" required>
+								<MenuItem value="2">High</MenuItem>
+								<MenuItem value="1">Medium</MenuItem>
+								<MenuItem value="0">Low</MenuItem>
+							  </Select>
+						  </FormControl>
 					</div>
 					<div className="row expand">
 						<IconButton size="small" color="primary" onClick={handleExpand}>
@@ -274,13 +278,14 @@ export default function NewExpenses(){
 						</IconButton>
 					</div>
 					<div className="row">
-						<span className="label">Amount</span>
 						{typeof newExpense.amount !== "object" ? 
-						<TextField onChange={(e)=>handleExpenses(e,"amount")} defaultValue={500} type="number" variant="standard" required
+						<TextField onChange={(e)=>handleExpenses(e,"amount")} defaultValue={500} label="Amount" type="number" size="small" variant="outlined"
+						required
 						 InputProps={{
 							startAdornment: <InputAdornment position="start">$</InputAdornment>,
 						}} /> 
-						: <TextField id="amount" value={getTotal(newExpense.amount)} type="number" variant="standard" disabled required
+						: <TextField id="amount" value={getTotal(newExpense.amount)} type="number" label="Amount" size="small" variant="outlined" disabled
+							required
 						 InputProps={{
 							startAdornment: <InputAdornment position="start">$</InputAdornment>,
 						}} /> 
@@ -292,27 +297,31 @@ export default function NewExpenses(){
 						</IconButton>
 					</div>
 				</div>
-				<div className="bottom">
 					{typeof newExpense.amount !== "object" ? "" : 
 					newExpense.amount.map((amount,i)=>{
 						return (
-							Expanded(amount,i)
+							<div className="bottom">
+							{Expanded(amount,i)}
+							</div>
 						)
 					})}
-				</div>
 			</div>
+			{expensesList.length >0 ? 
 			<div className="list">
+				<div className="row even">
 					<span className="label  left">Name</span>
 					<span className="label">Fixed</span>
 					<span className="label">Priority</span>
 					<span className="label  left">Amount</span>
 					<span className="label"></span>
+				</div>
 			{expensesList.map((income,i)=>{
 					return (
 							item(income,i)
 						)
 				})}
 			</div>
+			: ""}
 			<div className="end">
 				<Button size="medium" variant="contained" onClick={handleSubmit} disabled={expensesList.length === 0}>Done</Button>
 			</div>
