@@ -17,7 +17,7 @@ function App() {
 	
 	const darkTheme = createTheme({
 		  palette: {
-			mode: darkMode ? 'dark' : 'light',
+			mode: darkmode ? 'dark' : 'light',
 		  },
 	});
 
@@ -26,7 +26,6 @@ function App() {
 		setIncome(fetchIncome)
 		setExpenses(fetchExpenses)
 		setDarkmode(darkMode())
-		console.log(darkMode())
 	}
 	
 	useEffect(()=>{

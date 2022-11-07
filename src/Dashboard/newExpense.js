@@ -180,7 +180,7 @@ export default function NewExpenses(){
 		return (
 		<div className={"row "+(i%2===0 ? "" : "even")} key={i+""+expense.date}>
 			<div className="column" >
-				<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={expense.name} size="large" variant="standard" required/>
+				<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={expense.name} variant="standard" required/>
 			</div>
 			<div className="column">
 				<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={expense.fixed} required/>
