@@ -52,7 +52,7 @@ export default function NewIncome({income}){
 	const item = (income,i) => {
 		return (<div className={"row "+(i%2===0 ? "" : "even")} key={i+""+income.date}>
 				<div className="column " >
-					<TextField id="name" size="small" onChange={(e)=>handleChange(e,i)} defaultValue={income.name} size="large" variant="standard" required/>
+					<TextField id="name" size="small" onChange={(e)=>handleChange(e,i)} defaultValue={income.name} variant="standard" required/>
 				</div>
 				<div className="column " >
 					<Switch id="fixed" size="small" onChange={(e)=>handleChange(e,i)} color="primary" defaultChecked={income.fixed} required/>

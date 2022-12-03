@@ -20,19 +20,19 @@ export default function App(){
 						<b>Dashboard</b>
 					</div>
 				</Link>
-				<Link to="">
+				<Link to="/income">
 					<div className="item">
 						<AccountBalanceWallet/>
 						<b>Income</b>
 					</div>
 				</Link>
-				<Link to="">
+				<Link to="/expenses">
 					<div className="item">
 						<Receipt/>
 						<b>Expenses</b>
 					</div>
 				</Link>
-				<Link to="">
+				<Link to="user">
 					<div className="item">
 						<Login/>
 						<b>Login</b>

@@ -30,16 +30,20 @@ export default function NewExpenses(){
 		n_expenses.push({...newExpense,date:date})
 		setexpensesList(n_expenses)
 		setNewExpenses({...newExpense,fixed:true})
+		setNewExpenses({name:'Rent',fixed:true,priority:2,amount:500})
 		setLength(n_expenses.length)
 	}
 	
 	const handleChange = (e,id,i) => {
 		const expenses = expensesList
-		
+		let date = new Date()
+		date  = date.valueOf()
+
 		if(id === "name")expenses[i].name = e.target.value
 		if(id === "fixed")expenses[i].fixed = e.target.checked
 		if(id === "priority")expenses[i].priority = e.target.value
 		if(id === "amount")expenses[i].amount = e.target.value
+		if(id)
 		
 		setexpensesList(expenses)
 		setLength(expenses)
@@ -297,13 +301,9 @@ export default function NewExpenses(){
 					</div>
 				</div>
 					{typeof newExpense.amount !== "object" ? "" : 
-					newExpense.amount.map((amount,i)=>{
-						return (
-							<div className="bottom">
-							{Expanded(amount,i)}
-							</div>
-						)
-					})}
+					<div className="bottom">
+					{newExpense.amount.map((amount,i)=>Expanded(amount,i))}
+					</div>}
 			</div>
 			{expensesList.length >0 ? 
 			<div className="list">

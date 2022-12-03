@@ -38,14 +38,16 @@ function App() {
 		}
 	})
 	
+
+
   return (
   <Router>
    <ThemeProvider theme={darkTheme}>
-		<Nav/>
+		{income == false || expenses == false || income == null || expenses == null ? "" : <Nav/>}
 		<div className="main">
 			<Routes>
 				<Route path="/" element={<Dashboard income={income} expenses={expenses} theme={darkmode}/>}/>
-				<Route path="/income" element={<Income/>}/>
+				<Route path="/income" element={<Income income={income} theme={darkmode} />}/>
 				<Route path="/expenses" element={<Expenses/>}/>
 			</Routes>
 		</div>
