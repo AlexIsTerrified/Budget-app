@@ -1,3 +1,4 @@
+import {updateDate} from './calculations'
 import { initializeApp } from "firebase/app";
 /*import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
@@ -37,20 +38,43 @@ export function setDarkMode(d){
 	document.getElementById("hidden").click()
 }
 
+
+export function fetchTempIncome(){
+	const data = localStorage.getItem("temp_income");
+	
+	if(data == null)return false
+	
+	
+	return JSON.parse(data);
+}
+
+export function fetchTempExpenses(){
+	const data = localStorage.getItem("temp_expenses");
+	
+	if(data == null)return false
+	
+	return JSON.parse(data)
+}
+
+export function tempIncome(data){
+	const newData = JSON.stringify(data)
+		localStorage.setItem("temp_income",newData);
+}
+export function tempExpenses(data){
+		const newData = JSON.stringify(data)
+		localStorage.setItem("temp_expenses",newData);
+}
+
 // takes in edited income data as a javascript object and updates it in local storage
 export function editIncome(data){
-	const income = JSON.stringify(data)
-	const old_income = localStorage.getItem("local_income") || ""
-	
-	if(income.normalize() !==  old_income.normalize()){
-		const income = JSON.stringify(data)
-		localStorage.setItem("local_income",income);
-		document.getElementById("hidden").click()
-		
-		return true
-	}else{
-		return false
+	let newData = data
+	const dataString = JSON.stringify(data)
+	const oldData = JSON.stringify(fetchIncome())
+	if(fetchIncome() && dataString.normalize() !== oldData.normalize){
+		newData = updateDate(data,fetchIncome())
 	}
+	const income = JSON.stringify(newData)
+	localStorage.setItem("local_income",income);
 }
 
 // fetches income data as javascript object from local storage
@@ -65,18 +89,14 @@ export function fetchIncome(){
 
 // takes in edited expenses data as a javascript object and updates it in local storage
 export function editExpenses(data){
-	const income = JSON.stringify(data)
-	const old_expenses = localStorage.getItem("local_expenses") || ""
-	
-	if(income.normalize() !==  old_expenses.normalize()){
-		
-		localStorage.setItem("local_expenses",income);
-		document.getElementById("hidden").click()
-		
-		return true
-	}else{
-		return false
+	let newData = data
+	const dataString = JSON.stringify(data)
+	const oldData = JSON.stringify(fetchExpenses())
+	if(fetchExpenses() && dataString.normalize() !== oldData.normalize){
+		newData = updateDate(data,fetchExpenses())
 	}
+	const income = JSON.stringify(newData)
+	localStorage.setItem("local_expenses",income);
 }
 // fetches expenses data as javascript object from local storage
 export function fetchExpenses(){
@@ -85,5 +105,9 @@ export function fetchExpenses(){
 	if(data == null)return false
 	
 	return JSON.parse(data)
+}
+
+export function syncInfo(){
+
 }
 

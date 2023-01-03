@@ -1,13 +1,13 @@
 import { useState} from 'react'
 import {TextField,InputAdornment,InputLabel,Switch,Button,IconButton,Select,MenuItem,FormControl} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
-import {editExpenses} from '../Functions/functions'
+import {tempExpenses,editExpenses} from '../Functions/functions'
 import {getTotal}from '../Functions/calculations'
 
 export default function NewExpenses(){
 	const [expensesList,setexpensesList] = useState([])
 	const [length,setLength] = useState(expensesList.length)
-	const [newExpense, setNewExpenses] = useState({name:'Rent',fixed:true,priority:2,amount:500});
+	const [newExpense, setNewExpenses] = useState({name:'Rent',fixed:true,priority:2,amount:1000});
 	const [expanded,setExpanded] = useState({})
 	
 	const handleExpenses = (e,id) => {
@@ -27,26 +27,25 @@ export default function NewExpenses(){
 			setExpanded(n_expanded)
 		}
 		
-		n_expenses.push({...newExpense,date:date})
+		n_expenses.unshift({...newExpense,date:date})
 		setexpensesList(n_expenses)
 		setNewExpenses({...newExpense,fixed:true})
-		setNewExpenses({name:'Rent',fixed:true,priority:2,amount:500})
+		setNewExpenses({name:'Rent',fixed:true,priority:2,amount:1000})
 		setLength(n_expenses.length)
+		handleSubmit()
 	}
 	
 	const handleChange = (e,id,i) => {
 		const expenses = expensesList
-		let date = new Date()
-		date  = date.valueOf()
 
 		if(id === "name")expenses[i].name = e.target.value
 		if(id === "fixed")expenses[i].fixed = e.target.checked
 		if(id === "priority")expenses[i].priority = e.target.value
 		if(id === "amount")expenses[i].amount = e.target.value
-		if(id)
 		
 		setexpensesList(expenses)
 		setLength(expenses)
+		handleSubmit()
 	}
 	
 	const handleRemove = (i) => {
@@ -56,13 +55,14 @@ export default function NewExpenses(){
 		
 		setexpensesList(expenses)
 		setLength(expenses.length)
+		handleSubmit()
 	}
 	
 	const handleExpand = () => {
 		const n_expense = newExpense
 		if(typeof n_expense.amount !== "object"){
 			const date = new Date()
-			n_expense.amount = [{name:"item",amount:100,date:date.valueOf()}]
+			n_expense.amount = [{name:"item",amount: n_expense.amount,date:date.valueOf()}]
 		}else{
 			
 			n_expense.amount = getTotal(n_expense.amount)
@@ -86,7 +86,7 @@ export default function NewExpenses(){
 		const expense = newExpense
 			if(add){
 				const date = new Date()
-				expense.amount.splice(i+1,0,{name:"item",amount:100,date:date.valueOf()})
+				expense.amount.splice(i+1,0,{name:"item",amount:0,date:date.valueOf()})
 			}else{
 				expense.amount.splice(i,1)
 			}
@@ -99,33 +99,12 @@ export default function NewExpenses(){
 	}
 	
 	const handleSubmit = () => {
-		editExpenses(expensesList);
+		tempExpenses(expensesList);
 	}
-	
-	const Expanded = (amount,i) => {
-		return (
-			<div className="item" key={i+""+amount.date}>
-				<div className="row">
-					<span className="label">Name</span>
-					<TextField id="name" onChange={(e)=>{handleExpChange(e,i)}} defaultValue={amount.name} size="large" variant="standard" required/>
-				</div>
-				<div className="row">
-					<span className="label">Amount</span>
-					<TextField id="amount" onChange={(e)=>{handleExpChange(e,i)}} defaultValue={amount.amount} type="number" variant="standard" required
-					 InputProps={{
-						startAdornment: <InputAdornment position="start">$</InputAdornment>,
-					  }} />
-				</div>
-				<div className="row expand">
-					<IconButton size="small" variant="contained" color="primary" onClick={()=>handleExpAdd(i,true)}><AddCircle/></IconButton>
-				</div>
-				<div className="row expand">
-					<IconButton size="small" variant="contained" color="error" onClick={()=>handleExpAdd(i,false)}>
-						<RemoveCircle/>
-					</IconButton>
-				</div>
-			</div>
-		)
+
+	const handleSync = () => {
+		editExpenses(expensesList);
+		document.getElementById("hidden").click()
 	}
 	
 	const expand = (date) => {
@@ -147,6 +126,7 @@ export default function NewExpenses(){
 		
 		setexpensesList(expense)
 		setLength(e.target.value)
+		handleSubmit()
 	}
 	
 	const editExpand = (i) => {
@@ -161,6 +141,7 @@ export default function NewExpenses(){
 		
 		setexpensesList(n_expense)
 		setLength(typeof n_expense[i].amount.length || 0)
+		handleSubmit()
 	}
 	
 	const editExpAdd = (i,a, add) => {
@@ -168,7 +149,7 @@ export default function NewExpenses(){
 		let total = getTotal(expense[i].amount);
 			if(add){
 				const date = new Date()
-				expense[i].amount.splice(a+1,0,{name:"item",amount:100,date:date.valueOf()})
+				expense[i].amount.splice(a+1,0,{name:"item",amount:0,date:date.valueOf()})
 			}else{
 				expense[i].amount.splice(a,1)
 			}
@@ -177,12 +158,14 @@ export default function NewExpenses(){
 		}
 		setexpensesList(expense)
 		setLength(expense[i].amount.length || 0)
+		handleSubmit()
 	}
 	
+//UI begins here
 	const item = (expense,i) => {
 		
 		return (
-		<div className={"row "+(i%2===0 ? "" : "even")} key={i+""+expense.date}>
+		<div className={"row "+(i%2===0 ? "" : "even")} key={i+""+expense.date+""+expense.name}>
 			<div className="column" >
 				<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={expense.name} variant="standard" required/>
 			</div>
@@ -246,6 +229,32 @@ export default function NewExpenses(){
 			})}
 			</div> 
 			: ""}
+			</div>
+		)
+	}
+
+	const Expanded = (amount,i) => {
+		return (
+			<div className="item" key={i+""+amount.date}>
+				<div className="row">
+					<span className="label">Name</span>
+					<TextField id="name" onChange={(e)=>{handleExpChange(e,i)}} defaultValue={amount.name} size="large" variant="standard" required/>
+				</div>
+				<div className="row">
+					<span className="label">Amount</span>
+					<TextField id="amount" onChange={(e)=>{handleExpChange(e,i)}} defaultValue={amount.amount} type="number" variant="standard" required
+					 InputProps={{
+						startAdornment: <InputAdornment position="start">$</InputAdornment>,
+					  }} />
+				</div>
+				<div className="row expand">
+					<IconButton size="small" variant="contained" color="primary" onClick={()=>handleExpAdd(i,true)}><AddCircle/></IconButton>
+				</div>
+				<div className="row expand">
+					<IconButton size="small" variant="contained" color="error" onClick={()=>handleExpAdd(i,false)}>
+						<RemoveCircle/>
+					</IconButton>
+				</div>
 			</div>
 		)
 	}
@@ -322,7 +331,7 @@ export default function NewExpenses(){
 			</div>
 			: ""}
 			<div className="end">
-				<Button size="medium" variant="contained" onClick={handleSubmit} disabled={expensesList.length === 0}>Done</Button>
+				<Button size="medium" variant="contained" onClick={handleSync} disabled={expensesList.length === 0}>Done</Button>
 			</div>
 		</div>
 	</div>

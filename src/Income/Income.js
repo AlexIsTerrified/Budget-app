@@ -1,19 +1,50 @@
-import {useEffect, useState} from 'react'
-import {TextField,InputAdornment,Switch,IconButton,Button} from '@mui/material';
-import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
+import React,{useState,useEffect} from 'react'
+import {Select,TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,
+	FormControl,InputLabel} from '@mui/material';
+import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,ArrowDropUp} from '@mui/icons-material';
+import {useLocation} from 'react-router-dom'
 import {tempIncome,editIncome} from '../Functions/functions'
-import {getTotal}from '../Functions/calculations'
+import {getTotal,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
 
-export default function NewIncome({income}){
+export default function Income({income,theme}){
 	const [incomeList,setIncomeList] = useState(income || [])
+	const [sort,setSort] = useState({type:"amount",d:false})
 	const [length,setLength] = useState(incomeList.length)
-	const [newIncome, setNewIncome] = useState({name:'Salary',fixed:true,amount:1000})
+	const [newIncome, setNewIncome] = useState({name:'',fixed:false,amount:0})
 	const [expanded,setExpanded] = useState({})
+	const [menuIncome,setMenuIncome] = useState({});
+	const [menu,setMenu] = useState(0);
+	const [anchorEl, setAnchorEl] = useState(null);
+	const open = Boolean(anchorEl);
+	const [openForm, setForm] = useState(false);
+	const [openDelete, setOpenDelete] = useState(false);
+	const [openChange, setOpenChange] = useState(false);
+
+	const location = useLocation();
 	
-	const handleIncome = (e) => {
-		if(e.target.id === "name")setNewIncome({...newIncome,name:e.target.value})
-		if(e.target.id === "fixed")setNewIncome({...newIncome,fixed:e.target.checked})
-		if(e.target.id === "amount")setNewIncome({...newIncome,amount:e.target.value})
+	const handleSort = (type,d) =>{
+		let newD = d
+		if(type === sort.type){
+			newD = !sort.d
+		}
+		setSort({type:type,d:newD})
+		if(type === "amount"){
+			setIncomeList(sortByAmount(incomeList,newD))
+		}
+		else if(type === "priority"){
+			setIncomeList(sortByPriority(incomeList,newD))
+		}else if(type === "name"){
+			setIncomeList(sortByName(incomeList,newD))
+		}else if(type === "fixed"){
+			setIncomeList(sortByFixed(incomeList,newD))
+		}
+		
+	}
+
+	const handleIncome = (e,id) => {
+		if(id === "name")setNewIncome({...newIncome,name:e.target.value})
+		if(id === "fixed")setNewIncome({...newIncome,fixed:e.target.checked})
+		if(id === "amount")setNewIncome({...newIncome,amount:e.target.value})
 	}
 
 	const handleAddIncome = (e) => {
@@ -38,7 +69,8 @@ export default function NewIncome({income}){
 		if(id === "name")income[i].name = e.target.value
 		if(id === "fixed")income[i].fixed = e.target.checked
 		if(id === "amount")income[i].amount = e.target.value
-		
+
+
 		setIncomeList(income)
 		setLength(income.length)
 		handleSubmit()
@@ -53,12 +85,42 @@ export default function NewIncome({income}){
 		setLength(income.length)
 		handleSubmit()
 	}
+
+	const handleClick = (event,income,i) => {
+		setMenuIncome(income)
+		setMenu(i)
+	  	setAnchorEl(event.currentTarget);
+	};
+	const handleClose = () => {
+	  setAnchorEl(null);
+	};
+
+
+	const handleClickDelete = (income,i) => {
+		setMenuIncome(income)
+		setMenu(i)
+		setOpenDelete(true);
+	  };
+	
+	  const handleCloseDelete = () => {
+		setOpenDelete(false);
+	  };
+
+	const handleClickChange = (income,i) => {
+		setMenuIncome(income)
+		setMenu(i)
+		setOpenChange(true);
+	  };
+	
+	  const handleCloseChange = () => {
+		setOpenChange(false);
+	  };
 	
 	const handleExpand = () => {
 		const n_income = newIncome
 		if(typeof n_income.amount !== "object"){
 			const date = new Date()
-			n_income.amount = [{name:"item",amount: n_income.amount,date:date.valueOf()}]
+			n_income.amount = [{name:"item",amount:n_income.amount,date:date.valueOf()}]
 		}else{
 			
 			n_income.amount = getTotal(n_income.amount)
@@ -96,11 +158,6 @@ export default function NewIncome({income}){
 		tempIncome(incomeList);
 	}
 
-	const handleSync = () => {
-		editIncome(incomeList);
-		document.getElementById("hidden").click()
-	}
-
 	const expand = (date) => {
 		const n_expanded = expanded
 		if(n_expanded[date]){
@@ -130,7 +187,7 @@ export default function NewIncome({income}){
 			n_income[i].amount = [{name:"item",amount:n_income[i].amount,date:date.valueOf()}]
 		}else{
 			
-			n_income[i].amount = getTotal(n_income.amount)
+			n_income[i].amount = getTotal(n_income[i].amount)
 		}
 		
 		setIncomeList(n_income)
@@ -156,11 +213,13 @@ export default function NewIncome({income}){
 	}
 
 
-//UI begins here
+//UI code starts from here
 	const item = (income,i) => {
-		return (<div className={"row "+(i%2===0 ? "" : "even")} key={i+""+income.date+""+income.name}>
+		return (<div className={"row "+(i%2===0 ? "" : "even ")+(income.error ? "error ":"")+(income.outdated ? "outdated ":"")} 
+		key={i+""+income.date+""+income.name}>
 				<div className="column " >
-					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={income.name} variant="standard" required/>
+					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} error={income.error} defaultValue={income.name} 
+					variant="standard" required/>
 				</div>
 				<div className="column " >
 					<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={income.fixed} required/>
@@ -168,10 +227,8 @@ export default function NewIncome({income}){
 				<div className="column">
 				{typeof income.amount !== "object" ?
 				<>
-					<IconButton size="small" onClick={()=>editExpand(i)}>
-						<ExpandMore/>
-					</IconButton>
-					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} defaultValue={income.amount} type="number" variant="standard" required
+					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} error={income.error} defaultValue={income.amount} 
+					type="number" variant="standard" required
 						 InputProps={{
 							startAdornment: <InputAdornment position="start">$</InputAdornment>,
 					}} />
@@ -183,9 +240,11 @@ export default function NewIncome({income}){
 					<span>{getTotal(income.amount)}</span>
 				</>}
 			</div>
-				<div className="column ">
-					<IconButton size="small" variant="contained" color="error" onClick={()=>handleRemove(i)}><RemoveCircle/></IconButton>
-				</div>
+			<div className="column ">
+				<IconButton size="small" aria-label="more" onClick={(e)=>handleClick(e,income,i)}>
+					<MoreVert/>
+				</IconButton>
+			</div>
 				{(typeof income.amount === 'object') && expanded[income.date] ?
 			<div className="expanded">
 			{income.amount.map((amount,a)=>{
@@ -218,7 +277,7 @@ export default function NewIncome({income}){
 			</div>
 		)
 	}
-	
+
 	const Expanded = (amount,i) => {
 		return (
 			<div className="item" key={i+""+amount.date}>
@@ -245,27 +304,76 @@ export default function NewIncome({income}){
 		)
 	}
 
+	const ItemMenu = () => {
+		return <Menu anchorEl={anchorEl} open={open} onClose={handleClose} anchorOrigin={{vertical: 'top',horizontal: 'left',}}
+					transformOrigin={{vertical: 'top',horizontal: 'left',}}>
+					<MenuItem onClick={()=>{handleClickChange(menuIncome,menu);handleClose();}}>Change Amount type</MenuItem>
+					<MenuItem onClick={handleClose}>Details</MenuItem>
+					<MenuItem onClick={()=>{handleClickDelete(menuIncome,menu);handleClose();}} color="secondary">Delete</MenuItem>
+				</Menu>
+	}
+
+	const Changedialog = () => {
+		return  <Dialog open={openChange} onClose={handleCloseChange}>
+        <DialogTitle>
+         Change Amount type of {menuIncome.name}?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you would like to change the amount type from {typeof menuIncome.amount !== 'object' ? "a single amount to a collection of sub items?"
+			: "a collection of sub items to a single amount?"}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseChange}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={()=>{editExpand(menu);handleCloseChange()}}>Change</Button>
+        </DialogActions>
+      </Dialog>
+	}
+	
+	const Deletedialog = () => {
+		return  <Dialog open={openDelete} onClose={handleCloseDelete}>
+        <DialogTitle>
+          Delete {menuIncome.name}?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you would like to delete your {menuIncome.name}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDelete}>
+            Cancel
+          </Button>
+          <Button color="error" onClick={()=>{handleRemove(menu);handleCloseDelete()}}>Delete</Button>
+        </DialogActions>
+      </Dialog>
+	}
+	
 	return (
-	<div className="income">
+	<div className="income-page">
 		<div className="page">
-			<h2>Add an income</h2>
-			<div className="form">
+			<h1>Income</h1>
+			<div className="head">
+			<Button variant="contained" color="primary" onClick={()=>{setForm(true)}}>ADD INCOME</Button>
+			</div>
+			<Dialog open={openForm} onClose={()=>{setForm(false)}} maxWidth="md" fullWidth>
+			<DialogTitle>Add An Income</DialogTitle>
+			<DialogContent>
+			<div className="income-form">
 				<div className="top">
 					<div className="row">
-						<TextField id="name" onChange={handleIncome} defaultValue="Salary" label="Name" size="small" variant="outlined" required/>
+						<TextField onChange={(e)=>handleIncome(e,"name")} label="Name" size="small" variant="outlined" required/>
 					</div>
 					<div className="row center">
 					<span className="label">Fixed</span>
-						<Switch id="fixed" onChange={handleIncome} color="primary" checked={newIncome.fixed} required/>
-					</div>
-					<div className="row expand">
-						<IconButton size="small" color="primary" onClick={handleExpand}>
-							{ typeof newIncome.amount !== "object" ? <ExpandMore/> : <ExpandLess/>}
-						</IconButton>
+						<Switch onChange={(e)=>handleIncome(e,"fixed")} color="primary" required/>
 					</div>
 					<div className="row">
 					{typeof newIncome.amount !== "object" ? 
-						<TextField onChange={(e)=>handleIncome(e,"amount")} defaultValue={1000} label="Amount" type="number" size="small" variant="outlined"
+						<TextField onChange={(e)=>handleIncome(e,"amount")} defaultValue="0" label="Amount" type="number" size="small" variant="outlined"
 						required
 						 InputProps={{
 							startAdornment: <InputAdornment position="start">$</InputAdornment>,
@@ -277,9 +385,9 @@ export default function NewIncome({income}){
 						}} /> 
 						}
 					  </div>
-					<div className="row expand">
-						<IconButton size="small" variant="contained" color="primary"  onClick={handleAddIncome} disabled={newIncome.name == '' || newIncome.amount == ''}>
-							<AddCircle/>
+					  <div className="row expand">
+						<IconButton size="small" color="primary" onClick={handleExpand}>
+							{ typeof newIncome.amount !== "object" ? <ExpandMore/> : <ExpandLess/>}
 						</IconButton>
 					</div>
 				</div>
@@ -288,12 +396,26 @@ export default function NewIncome({income}){
 					{newIncome.amount.map((amount,i)=>Expanded(amount,i))}
 					</div>}
 			</div>
+			</DialogContent>
+			<DialogActions>
+				<Button autoFocus onClick={()=>{setForm(false)}}>
+					Cancel
+				</Button>
+				<Button disabled={newIncome.name == '' || newIncome.amount == ''} onClick={()=>{handleAddIncome();setForm(false)}}>Add</Button>
+			</DialogActions>
+			</Dialog>
 			{incomeList.length >0 ? 
 			<div className="list">
 				<div className="row even">
-					<span className="label  left">Name</span>
-					<span className="label">Fixed</span>
-					<span className="label left">Amount</span>
+				<span className={"label left "+(sort.type === "name" ? "selected" : "")} onClick={()=>handleSort("name",false)}>
+						{sort.type === "name" && !sort.d ? <ArrowDropUp/> : <ArrowDropDown/>}Name
+					</span>
+					<span className={"label "+(sort.type === "fixed" ? "selected" : "")} onClick={()=>handleSort("fixed",false)}>
+						{sort.type === "fixed" && !sort.d ? <ArrowDropUp/> : <ArrowDropDown/>}Fixed
+					</span>
+					<span className={"label left "+(sort.type === "amount" ? "selected" : "")} onClick={()=>handleSort("amount",false)}>
+						{sort.type === "amount" && !sort.d ? <ArrowDropUp/> : <ArrowDropDown/>}Amount
+					</span>
 					<span className="label"></span>
 				</div>
 				{incomeList.map((income,i)=>{
@@ -304,9 +426,12 @@ export default function NewIncome({income}){
 			</div>
 			: ""}
 			<div className="end">
-				<Button size="medium" variant="contained" onClick={handleSync} disabled={incomeList.length === 0}>Done</Button>
+				<Button size="medium" variant="contained" onClick={handleSubmit} disabled={incomeList.length === 0}>Done</Button>
 			</div>
 		</div>
+		<ItemMenu/>
+		<Deletedialog/>
+		<Changedialog/>
 	</div>
 	)
 }

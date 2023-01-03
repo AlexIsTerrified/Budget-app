@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import {NavLink as Link} from 'react-router-dom'
-import {Switch,FormControl} from '@mui/material';
+import {Switch,FormControl, Tooltip,Zoom} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {AccountBalanceWallet,Receipt,Dashboard,Login} from '@mui/icons-material';
 import {setDarkMode,darkMode} from './Functions/functions'
@@ -16,25 +16,33 @@ export default function App(){
 			<div className="start">
 				<Link to="">
 					<div className="item">
-						<Dashboard/>
+            <Tooltip title="Dashboard" TransitionComponent={Zoom} placement="right-start" arrow>
+              <Dashboard/>
+            </Tooltip>
 						<b>Dashboard</b>
 					</div>
 				</Link>
 				<Link to="/income">
 					<div className="item">
-						<AccountBalanceWallet/>
+            <Tooltip title="Income" TransitionComponent={Zoom} placement="right-start" arrow>
+						  <AccountBalanceWallet/>
+            </Tooltip>
 						<b>Income</b>
 					</div>
 				</Link>
 				<Link to="/expenses">
 					<div className="item">
-						<Receipt/>
+            <Tooltip title="Expenses" TransitionComponent={Zoom} placement="right-start" arrow>
+						  <Receipt/>
+            </Tooltip>
 						<b>Expenses</b>
 					</div>
 				</Link>
 				<Link to="user">
 					<div className="item">
-						<Login/>
+            <Tooltip title="User preference" TransitionComponent={Zoom} placement="right-start" arrow>
+						  <Login/>
+            </Tooltip>
 						<b>Login</b>
 					</div>
 				</Link>

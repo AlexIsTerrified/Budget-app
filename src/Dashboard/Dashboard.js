@@ -1,13 +1,15 @@
 import { useTheme} from '@mui/material/styles';
+import {Error,CheckCircle, CheckCircleSharp} from '@mui/icons-material';
 import {NavLink as Link} from 'react-router-dom'
 import Chart from 'react-apexcharts'
 import NewIncome from './newIncome'
 import NewExpenses from './newExpense'
-import {getTotal,sortByAmount,donutInputs,areaInputs}from '../Functions/calculations'
+import {getTotal,sortByStatus,sortByAmount,donutInputs,areaInputs, sortByPriority,ifOutdated}from '../Functions/calculations'
+
 
 export default function Dashboard({income,expenses,theme}){
 	
-	if(income == false || expenses == false || income == null || expenses == null)return (
+	if(income === false || expenses === false || income === null || expenses === null)return (
 		<div className={"start-form "+(income != false ? "next" : "")}>
 			<NewIncome income={income}/>
 			<NewExpenses/>
@@ -114,14 +116,55 @@ export default function Dashboard({income,expenses,theme}){
 			</div>
 		</>)
 	}
-	
+
+//UI begins here
+
+	const IncomeExceed = () => {
+		let errors = []
+		let suberrors = []
+
+		expenses.forEach((expense)=>{
+			if(expense.error){
+				if(expense.suberror && typeof expense.amount === 'object'){
+					expense.amount.forEach((sub)=>{
+						if(sub.error)
+						suberrors.push(sub)
+					})
+				}
+				errors.unshift(expense)
+			}
+		})
+
+		return(
+			<div className="exceed">
+				<b className="top">We recommend making the following changes to your expenses</b>
+				{errors.map((expense)=>{
+					return expense.suberror ? 
+						<div className="row column">
+							<span>Remove the following items from your <b>{expense.name}</b> expense</span>
+							<ul>
+								{suberrors.map((sub)=>{
+									return <li><span>{sub.name}</span><i>{sub.amount}</i></li>
+								})}
+							</ul>
+						</div>
+						: <div className="row">
+							<span>Remove your <b>{expense.name}</b> expense</span>
+							<i>{typeof expense.amount !== 'object' ? Number(expense.amount) : getTotal(expense.amount)}</i>
+							</div>
+				})}
+				
+			</div>
+		)
+	}
+
 	const expensesItem = (item,i) => {
 		const amount = item.amount !== "object" ? getTotal(item.amount).toFixed(2) : item.amount.toFixed(2)
 		const percentage = item.amount !== "object" ? ((getTotal(item.amount)/incomeTotal)*100).toFixed(1) : ((item.amount/incomeTotal)*100).toFixed(1)
 		const progress = item.amount !== "object" ? ((getTotal(item.amount)/expensesTotal)*100).toFixed(1) : ((item.amount/expensesTotal)*100).toFixed(1)
 		
 		return (
-			<div className={"row "+(i%2===0 ? "":"even")} key={i+""+item.date}>
+			<div className={"row "+(i%2===0 ? "":"even ")+(item.error ? "error ":"")+(item.outdated ? "outdated ":"")} key={i+""+item.date}>
 				<span className="column">{item.name}</span>
 				<span className="column">{item.priority == 0 ? "Low" : item.priority == 1 ? "Medium" : "High"}</span>
 				<span className="column">
@@ -138,7 +181,7 @@ export default function Dashboard({income,expenses,theme}){
 		const percentage = item.amount !== "object" ? ((getTotal(item.amount)/incomeTotal)*100).toFixed(1) : ((item.amount/incomeTotal)*100).toFixed(1)
 		
 		return (
-			<div className={"row "+(i%2===0 ? "":"even")} key={i}>
+			<div className={"row "+(i%2===0 ? "":"even ")+(item.error ? "error ":"")+(item.outdated ? "outdated ":"")} key={i}>
 				<span className="column">{item.name}</span>
 				<span className="column">
 				<div className="progress" style={{width:percentage+"%"}}>
@@ -152,16 +195,27 @@ export default function Dashboard({income,expenses,theme}){
 	return (
 		<div className="dashboard">
 			<div className="head">
-				<h2>Right now you are saving ${incomeTotal-expensesTotal}</h2>
+				<h1>Dashboard</h1>
+				{incomeTotal >= expensesTotal ? 
+				<h3 className="success">
+					<CheckCircle/>
+					You are currently saving <i>${(incomeTotal-expensesTotal).toFixed(2)}</i> or <i>{(((incomeTotal-expensesTotal)/incomeTotal)*100).toFixed(1)}%</i>of your income
+				</h3> : 
+				<h3 className="error">
+					<Error/>
+					 Your expenses currently exceed your income by <i>${(expensesTotal-incomeTotal).toFixed(2)} or <i>{(((expensesTotal-incomeTotal)/expensesTotal)*100).toFixed(1)}%</i></i>
+				</h3>}
+				{ifOutdated(income) ? <h3 className="outdated"><Error/> One or more of your incomes are outdated</h3> : null}
+				{ifOutdated(expenses) ? <h3 className="outdated"><Error/> One or more of your expenses are outdated</h3> : null}
 			</div>
 			<div className="charts">
 				<div className="pie-chart">
 					
-					{incomeTotal > expensesTotal ? 
+					{incomeTotal >= expensesTotal ? 
 					<div className="pie">
 						<Donut/> 
 					</div>
-					: "This sucks bro"}
+					: <IncomeExceed/>}
 					
 				</div>
 				<div className="graph">
@@ -174,7 +228,7 @@ export default function Dashboard({income,expenses,theme}){
 						<span className="label">Income</span>
 						<span className="label">% of income</span>
 					</div>
-					{sortByAmount(income).map((item,i)=>{
+					{sortByStatus(sortByAmount(income)).map((item,i)=>{
 						return (incomeItem(item,i))
 					})}
 				</Link>
@@ -184,7 +238,7 @@ export default function Dashboard({income,expenses,theme}){
 						<span className="label">Priority</span>
 						<span className="label">% of income</span>
 					</div>
-					{sortByAmount(expenses).map((item,i)=>{
+					{sortByStatus(sortByAmount(expenses)).map((item,i)=>{
 						return (expensesItem(item,i))
 					})}
 				</Link>
