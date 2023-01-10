@@ -266,6 +266,7 @@ export default function NewExpenses(){
 			<div className="form">
 				<div className="top">
 					<div className="row">
+						<span className="label">Name</span>
 						<TextField onChange={(e)=>handleExpenses(e,"name")} label="Name" defaultValue="Rent" size="small" variant="outlined" required/>
 					</div>
 					<div className="row center">

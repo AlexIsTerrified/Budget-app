@@ -4,9 +4,10 @@ import {Select,TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,D
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,ArrowDropUp,FilterCenterFocus,CameraAlt,Attachment} from '@mui/icons-material';
 import {useLocation} from 'react-router-dom'
 import {tempExpenses,editExpenses} from '../Functions/functions'
-import {getTotal,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
+import {getTotal,getStatus,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority,reorder}from '../Functions/calculations'
+import {turnOffCamera, turnOnCamera,renderExpense} from '../Functions/InfoExtractor'
 
-export default function Expenses({expenses,theme}){
+export default function Expenses({income,expenses,theme}){
 	const [expensesList,setExpensesList] = useState(expenses || [])
 	const [sort,setSort] = useState({type:"amount",d:false})
 	const [length,setLength] = useState(expensesList.length)
@@ -19,6 +20,7 @@ export default function Expenses({expenses,theme}){
 	const open = Boolean(anchorEl);
 	const openScan = Boolean(anchorScan);
 	const [openForm, setForm] = useState(false);
+	const [openCamera, setCamera] = useState(false);
 	const [openDelete, setOpenDelete] = useState(false);
 	const [openChange, setOpenChange] = useState(false);
 
@@ -61,7 +63,7 @@ export default function Expenses({expenses,theme}){
 			setExpanded(n_expanded)
 		}
 		n_expenses.unshift({...newExpenses,date:date})
-		setExpensesList(n_expenses);
+		setExpensesList(getStatus(income,n_expenses).expenses);
 		setNewExpenses({...newExpenses,fixed:true})
 		setLength(n_expenses.length)
 		handleSubmit()
@@ -76,7 +78,7 @@ export default function Expenses({expenses,theme}){
 		if(id === "amount")expenses[i].amount = e.target.value
 
 
-		setExpensesList(expenses)
+		setExpensesList(getStatus(income,expenses).expenses);
 		setLength(expenses.length)
 		handleSubmit()
 	}
@@ -86,7 +88,7 @@ export default function Expenses({expenses,theme}){
 		
 		expenses.splice(i,1)
 		
-		setExpensesList(expenses)
+		setExpensesList(getStatus(income,expenses).expenses);
 		setLength(expenses.length)
 		handleSubmit()
 	}
@@ -185,7 +187,7 @@ export default function Expenses({expenses,theme}){
 		if(e.target.id === "name")expenses[i].amount[a].name = e.target.value
 		if(e.target.id === "amount")expenses[i].amount[a].amount = e.target.value
 		
-		setExpensesList(expenses)
+		setExpensesList(getStatus(income,expenses).expenses);
 		setLength(e.target.value)
 		handleSubmit()
 	}
@@ -200,7 +202,7 @@ export default function Expenses({expenses,theme}){
 			n_expenses[i].amount = getTotal(n_expenses[i].amount)
 		}
 		
-		setExpensesList(n_expenses)
+		setExpensesList(getStatus(income,n_expenses).expenses);
 		setLength(typeof n_expenses[i].amount.length || 0)
 		handleSubmit()
 	}
@@ -217,15 +219,15 @@ export default function Expenses({expenses,theme}){
 		if(expenses[i].amount.length === 0){
 			expenses[i].amount = total;
 		}
-		setExpensesList(expenses)
+		setExpensesList(getStatus(income,expenses).expenses);
 		setLength(expenses[i].amount.length || 0)
 		handleSubmit()
 	}
 
-
 //UI code starts from here
 	const item = (expenses,i) => {
-		return (<div className={"row "+(i%2===0 ? "" : "even ")+(expenses.error ? "error ":"")+(expenses.outdated ? "outdated ":"")} 
+		return (
+		<div className={"row "+(i%2===0 ? "" : "even ")+(expenses.error ? "error ":"")+(expenses.outdated ? "outdated ":"")}
 			key={i+""+expenses.date+""+expenses.name}>
 				<div className="column " >
 					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} error={expenses.error} defaultValue={expenses.name} 
@@ -263,20 +265,20 @@ export default function Expenses({expenses,theme}){
 					<MoreVert/>
 				</IconButton>
 			</div>
-				{(typeof expenses.amount === 'object') && expanded[expenses.date] ?
+			{(typeof expenses.amount === 'object') && expanded[expenses.date] ?
 			<div className="expanded">
 			{expenses.amount.map((amount,a)=>{
 				return (
-					<div className={"item "+(amount.error ? 'error' : '')} key={i+""+amount.date}>
+					<div className={"item "+(amount.error && expenses.error ? 'error' : '')} key={i+""+amount.date}>
 						<div className="row">
 							<span className="label">Name</span>
-							<TextField id="name" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error} defaultValue={amount.name} size="large" 
-							variant="standard" required/>
+							<TextField id="name" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error&& expenses.error} 
+							defaultValue={amount.name} size="large" variant="standard" required/>
 						</div>
 						<div className="row">
 							<span className="label">Amount</span>
-							<TextField id="amount" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error} defaultValue={amount.amount} 
-							type="number" variant="standard" required
+							<TextField id="amount" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error&& expenses.error} 
+							defaultValue={amount.amount} type="number" variant="standard" required
 							 InputProps={{
 								startAdornment: <InputAdornment position="start">$</InputAdornment>,
 							  }} />
@@ -290,9 +292,8 @@ export default function Expenses({expenses,theme}){
 							</IconButton>
 						</div>
 					</div>
-				)
-			})}
-			</div> 
+				)})}
+			</div>
 			: ""}
 			</div>
 		)
@@ -335,7 +336,7 @@ export default function Expenses({expenses,theme}){
 
 	const ScanMenu = () => {
 		return <Menu anchorEl={anchorScan} open={openScan} onClose={handleClose}>
-					<MenuItem onClick={()=>{handleClose();}}>
+					<MenuItem onClick={()=>{turnOnCamera();handleClose();}}>
 						<ListItemIcon>
 							<CameraAlt fontSize="small" />
 						</ListItemIcon>
@@ -386,6 +387,19 @@ export default function Expenses({expenses,theme}){
           </Button>
           <Button color="error" onClick={()=>{handleRemove(menu);handleCloseDelete()}}>Delete</Button>
         </DialogActions>
+      </Dialog>
+	}
+
+	const Camera = () => {
+		return  <Dialog open={openCamera} onClose={handleCloseChange}>
+        <DialogTitle>
+         Take a picture of your receipt/Bill
+        </DialogTitle>
+        <DialogContent>
+          <div className="camera">
+
+		  </div>
+        </DialogContent>
       </Dialog>
 	}
 	
@@ -483,9 +497,11 @@ export default function Expenses({expenses,theme}){
 				<Button size="medium" variant="contained" onClick={handleSubmit} disabled={expensesList.length === 0}>Done</Button>
 			</div>
 		</div>
+		<input accept="image/*" className="hidden" id="cameraButton" type="file" capture="environment" onChange={(e)=>renderExpense(e.target)}/>
 		<ItemMenu/>
 		<Deletedialog/>
 		<Changedialog/>
 	</div>
 	)
 }
+

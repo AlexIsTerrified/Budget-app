@@ -144,13 +144,13 @@ export default function Dashboard({income,expenses,theme}){
 							<span>Remove the following items from your <b>{expense.name}</b> expense</span>
 							<ul>
 								{suberrors.map((sub)=>{
-									return <li><span>{sub.name}</span><i>{sub.amount}</i></li>
+									return <li><span>{sub.name}</span><i>${Number(sub.amount).toFixed(2)}</i></li>
 								})}
 							</ul>
 						</div>
 						: <div className="row">
 							<span>Remove your <b>{expense.name}</b> expense</span>
-							<i>{typeof expense.amount !== 'object' ? Number(expense.amount) : getTotal(expense.amount)}</i>
+							<i>${typeof expense.amount !== 'object' ? Number(expense.amount).toFixed(2) : getTotal(expense.amount).toFixed(2)}</i>
 							</div>
 				})}
 				
@@ -242,8 +242,6 @@ export default function Dashboard({income,expenses,theme}){
 						return (expensesItem(item,i))
 					})}
 				</Link>
-				<div className="extra">
-				</div>
 			</div>
 		</div>
 	)

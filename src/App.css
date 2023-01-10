@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap');
 
 body{
-	--border-radius:12px;
+	--border-radius:9px;
 	--background:linear-gradient(30.7deg, rgb(252, 190, 224) 16.8%, rgb(212, 254, 218) 103.6%) fixed;
 	--color:rgba(0,0,0,0.8);
 	--label:rgba(0,0,0,0.6);
@@ -29,12 +29,13 @@ a{text-decoration:none;color:inherit}
 
 #root{display:flex;}
 
+.hidden{display:none}
 #hidden{display:none}
 
 .nav{width:200px;height:100vh;box-sizing:border-box;padding:20px 0;box-shadow: -1px 1px 10px #0003;background:var(--accent-color);
 	position:sticky;top:0;z-index:5;display:flex;flex-direction:column;justify-content:space-between;transition:.3s;overflow:hidden}
 .nav .start{display:flex;flex-direction:column;padding:0 10px;flex:1}
-.nav .start .item{height:30px;display:flex;align-items:center;padding:5px;margin:5px 0;opacity:0.8;background:#0003;border-radius:9px;
+.nav .start .item{height:30px;display:flex;align-items:center;padding:5px;margin:5px 0;opacity:0.8;border-radius:9px;
 	transition:.3s}
 .nav .start .item:hover{scale:1.02;opacity:1}
 .nav .start .item svg{font-size:30px}
@@ -42,7 +43,6 @@ a{text-decoration:none;color:inherit}
 .MuiTooltip-popper{display:none !important;}
 .MuiTooltip-tooltip{font-size:.8rem !important}
 .MuiPaper-root{border-radius:var(--border-radius) !important}
-.nav .end{padding:10px}
 
 .main{flex:1;container-type: inline-size;display:flex;flex-direction:column;justify-content:Center;align-items:center;} 
 .main h3{font-weight:400;background: var(--accent-color);padding: 14px;width: fit-content;border-radius: var(--border-radius);display:flex;
@@ -61,8 +61,10 @@ flex-wrap:wrap;margin:10px 0}
 .dashboard .charts .exceed{display:flex;flex-direction:column;padding:10px;background:var(--box-color);box-shadow:1px 1px 10px #0003;
 	border-radius:var(--border-radius);box-sizing:border-box;height:100%}
 .dashboard .charts .exceed .top{margin-bottom:10px}
-.dashboard .charts .exceed .row{display:flex;justify-content: space-between;padding:4px}
-.dashboard .charts .exceed .row b{color:var(--error)}
+.dashboard .charts .exceed .row{display:flex;justify-content: space-between;padding: 10px;margin: 5px 0;background: var(--accent-color);
+	border-radius: var(--border-radius);font-size: 15px;}
+.dashboard .charts .exceed .row b{color:var(--error); }
+.dashboard .charts .exceed .row i{font-size:13px}
 .dashboard .charts .exceed .column{display:flex;flex-direction:column;}
 .dashboard .charts .exceed .column ul li{display: flex;justify-content: space-between;}
 .dashboard .charts .graph{max-height:300px;max-width:450px;flex:4;box-shadow:1px 1px 10px #0003;border-radius:var(--border-radius);
@@ -81,7 +83,7 @@ flex-wrap:wrap;margin:10px 0}
 .dashboard .lists .income .row:first-child{border-radius:var(--border-radius) var(--border-radius) 0 0}
 .dashboard .lists .income .row:last-child{border-radius:0 0 var(--border-radius) var(--border-radius)}
 .dashboard .lists .income .row .label{padding:10px 20px;font-size:1rem;color:var(--label);font-weight:400;}
-.dashboard .lists .income .row .column{padding:5px 20px;height:20px;    white-space: nowrap;text-overflow: ellipsis;
+.dashboard .lists .income .row .column{padding:5px 10px;height:20px;    white-space: nowrap;text-overflow: ellipsis;
 	overflow-x: hidden;}
 .dashboard .lists .income .progress{height:20px;z-index:0;background:#bb2e45d0;font-size:.9rem;display:flex;align-items:Center;
 	border-radius:3px}
@@ -98,7 +100,6 @@ flex-wrap:wrap;margin:10px 0}
 .dark .dashboard .lists .income .row .column span{text-shadow: 0 0 3px black;}
 .dashboard .lists .expenses{flex:4;height:fit-content;max-width:600px}
 .dashboard .lists .expenses .row{grid-template-columns:100px 100px 1fr;}
-.dashboard .lists .extra{flex:1;box-shadow:1px 1px 10px #0003;border-radius:15px;margin:10px;max-width:400px}
 
 .start-form{width:100%;height:100vh;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;
 	transition:.3s}
@@ -145,12 +146,12 @@ flex-wrap:wrap;margin:10px 0}
 .income-page{width:100%;max-width:960px;padding:20px;box-sizing:border-box;}
 .income-page .head{display:flex;margin:10px 0;padding:20px;gap:10px}
 .income-form{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px;
-	box-sizing:border-box;flex-wrap:wrap;background:var(--box-color);border-radius:var(--border-radius);margin:20px 0}
+	box-sizing:border-box;flex-wrap:wrap;border-radius:var(--border-radius);margin:20px 0}
 .income-form .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;width:100%;}
 .income-form .row{flex:1;display:flex;flex-direction:column;padding:10px;box-sizing: border-box; max-width: 200px;
 	min-width:160px}
 .income-form .row .label{font-size:.75rem;color:var(--label);font-weight:400;}
-.income-form.center{align-items:Center}
+.income-form .center{align-items:Center}
 .income-form .expand{flex:initial;min-width:initial;}
 .income-form .bottom{display:flex;align-self:end;align-items:Center;flex-direction: column;border:1px solid var(--border);
 	border-radius:var(--border-radius);padding:10px;transform-origin:top}
@@ -195,7 +196,7 @@ flex-wrap:wrap;margin:10px 0}
 	.dashboard .lists .income{flex:1}
 	.dashboard .lists .extra{flex:1;min-width:initial;max-width:initial}
 
-	.income-page .list .expanded{grid-column-start:2;grid-column-end:6;padding:10px;padding-top:0;border:1px solid var(--border);margin-bottom:10px;
+	.income-page .list .expanded{grid-column-start:2;grid-column-end:6;border:1px solid var(--border);margin-bottom:10px;
 		border-radius:var(--border-radius);transform-origin:top;display:grid}
 }
 
@@ -206,12 +207,12 @@ flex-wrap:wrap;margin:10px 0}
 	.start-form .income .list *:nth-child(4n-1){grid-column-start:1;}
 	.start-form .income .list *:nth-child(4n){grid-column-start:2;}
 
-	.income-page .list .row{grid-template-columns:1fr auto;}
+	.income-page .list .row{grid-template-columns:1fr auto;padding: 0 5px;}
 	.income-page .list .column:nth-child(4n-3){grid-column-start:1;}
 	.income-page .list .column:nth-child(4n-2){grid-column-start:2;}
 	.income-page .list .column:nth-child(4n-1){grid-column-start:1;}
 	.income-page .list .column:nth-child(4n){grid-column-start:2;}
-	.income-page .list .expanded{grid-column-start:1;grid-column-end:3}
+	.income-page .list .expanded{grid-column-start:1;grid-column-end:4}
 
 	.expense-page .list .row{grid-template-columns:1fr 1fr;}
 	.expense-page .list .column:nth-child(5n-4){grid-column-start:1;grid-column-end:2}
@@ -219,11 +220,11 @@ flex-wrap:wrap;margin:10px 0}
 	.expense-page .list .column:nth-child(5n-2){grid-column-start:1;}
 	.expense-page .list .column:nth-child(5n-1){grid-column-start:2;}
 	.expense-page .list .column:nth-child(5n){grid-column-start:3;}
-	.expense-page .list .expanded{grid-column-start:1;grid-column-end:3}
+	.expense-page .list .expanded{grid-column-start:1;grid-column-end:4}
 }
 @container (max-width:340px){
-	.dashboard .lists .expenses .row{grid-template-columns:1fr 1fr}
-	.dashboard .lists .expenses .row *:nth-child(3n){grid-column-start:1;grid-column-end:3}
+	.dashboard .lists .expenses .row{grid-template-columns:80px 80px 1fr}
+	.dashboard .lists .expenses .row *:nth-child(3n){grid-column-start:3;}
 }
 @container (max-width:640px){
 	
@@ -254,7 +255,9 @@ flex-wrap:wrap;margin:10px 0}
 @media only screen and (max-width: 640px){
 	.nav{width:100%;height:60px;position:fixed;top:calc(100% - 60px);backdrop-filter: blur(5px);flex-direction:row;padding:0 10px}
 	.nav .start{flex-direction:row;justify-content: space-evenly;align-items:center;}
-	.MuiTooltip-popper{display:none !important}
+	.nav .start a{flex:1}
+	.nav .start .item{justify-content:center}
+	.MuiTooltip-popper{}
 
 	.main{margin-bottom:60px}
 	.dashboard .lists .income .row .label{padding:10px;}

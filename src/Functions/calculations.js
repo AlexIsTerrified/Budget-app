@@ -54,40 +54,39 @@ export function getStatus(income,expenses){
 
 	const incomeTotal = getTotal(newIncome)
 	const expensesTotal = getTotal(newExpenses)
-	if(incomeTotal <= expensesTotal){
-		let total = expensesTotal
-		newExpenses = sortByAmount(newExpenses,true)
-		newExpenses = sortByPriority(newExpenses,true)
-		newExpenses = newExpenses.map((item)=>{
-			const newItem = item
-			if(incomeTotal < total){
-				newItem.error = true
-				if(typeof item.amount === 'object' && incomeTotal > total - (typeof item.amount !== 'object' ? Number(item.amount) : getTotal(item.amount))){
-					newItem.suberror = true
-					newItem.amount = newItem.amount.map((subItem,i)=>{
-						if(incomeTotal <= total){
-							subItem.error = true
-							if(i===newItem.amount.length-1){
-								newItem.suberror = false
-							}
-						}else{
-							subItem.error = false
+	let total = expensesTotal
+	newExpenses = sortByAmount(newExpenses,true)
+	newExpenses = sortByPriority(newExpenses,true)
+	newExpenses = newExpenses.map((item)=>{
+		const newItem = item
+		if(incomeTotal < total){
+			
+			newItem.error = true
+			if(typeof item.amount === 'object' && incomeTotal > total - (typeof item.amount !== 'object' ? Number(item.amount) : getTotal(item.amount))){
+				newItem.suberror = true
+				newItem.amount = newItem.amount.map((subItem,i)=>{
+					if(incomeTotal <= total){
+						subItem.error = true
+						if(i===newItem.amount.length-1){
+							newItem.suberror = false
 						}
-						total = total - Number(subItem.amount)
-						
-						return subItem
-					})
-				}else{
-					newItem.suberror = false
-					total = total - (typeof item.amount !== 'object' ? Number(item.amount) : getTotal(item.amount))
-				}
+					}else{
+						subItem.error = false
+					}
+					total = total - Number(subItem.amount)
+					
+					return subItem
+				})
 			}else{
 				newItem.suberror = false
-				newItem.error = false
+				total = total - (typeof item.amount !== 'object' ? Number(item.amount) : getTotal(item.amount))
 			}
-			return newItem
-		})
-	}
+		}else{
+			newItem.suberror = false
+			newItem.error = false
+		}
+		return newItem
+	})
 	return {income:newIncome, expenses:newExpenses}
 }
 
@@ -242,3 +241,11 @@ export function areaInputs(expensesTotal,incomeTotal,history){
 
 	return {xaxis:xaxis,income:income,expenses:expenses}
 }
+
+export function reorder(list, startIndex, endIndex){
+	const result = Array.from(list);
+	const [removed] = result.splice(startIndex, 1);
+	result.splice(endIndex, 0, removed);
+  
+	return result;
+  };

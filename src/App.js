@@ -8,6 +8,7 @@ import Nav from './Nav'
 import Dashboard from './Dashboard/Dashboard'
 import Income from './Income/Income'
 import Expenses from './Expenses/Expenses'
+import User from './User/User'
 import {fetchTempIncome,fetchTempExpenses,tempIncome,tempExpenses,fetchIncome,fetchExpenses,editIncome,editExpenses,darkMode} from './Functions/functions'
 import { getStatus,sortByStatus } from './Functions/calculations';
 
@@ -74,7 +75,8 @@ function App() {
 					<Routes>
 						<Route path="/" element={<Dashboard income={income} expenses={expenses} theme={darkmode}/>}/>
 						<Route path="/income" element={<Income income={income} theme={darkmode} />}/>
-						<Route path="/expenses" element={<Expenses expenses={expenses} theme={darkmode} />}/>
+						<Route path="/expenses" element={<Expenses income={income} expenses={expenses} theme={darkmode} />}/>
+						<Route path="/user" element={<User theme={darkmode} />}/>
 					</Routes>
 				</div>
 				<button id="hidden" onClick={updateState} />
