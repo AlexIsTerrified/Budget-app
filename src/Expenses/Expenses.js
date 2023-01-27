@@ -4,15 +4,14 @@ import {Select,TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,D
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,ArrowDropUp,FilterCenterFocus,CameraAlt,Attachment} from '@mui/icons-material';
 import {useLocation} from 'react-router-dom'
 import {tempExpenses,editExpenses} from '../Functions/functions'
-import {getTotal,getStatus,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority,reorder}from '../Functions/calculations'
+import {getTotal,getStatus,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
 import {turnOffCamera, turnOnCamera,renderExpense} from '../Functions/InfoExtractor'
 
-export default function Expenses({income,expenses,theme}){
+export default function Expenses({expenses,theme}){
 	const [expensesList,setExpensesList] = useState(expenses || [])
 	const [sort,setSort] = useState({type:"amount",d:false})
 	const [length,setLength] = useState(expensesList.length)
-	const [newExpenses, setNewExpenses] = useState({name:'',fixed:false,amount:0})
-	const [expanded,setExpanded] = useState({})
+	const [newExpenses, setNewExpenses] = useState({name:"",fixed:false,priority:2,amount:0})
 	const [menuExpenses,setMenuExpenses] = useState({});
 	const [menu,setMenu] = useState(0);
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -25,6 +24,10 @@ export default function Expenses({income,expenses,theme}){
 	const [openChange, setOpenChange] = useState(false);
 
 	const location = useLocation();
+
+	useEffect(()=>{
+		setExpensesList(expenses)
+	},[expenses])
 	
 	const handleSort = (type,d) =>{
 		let newD = d
@@ -33,15 +36,16 @@ export default function Expenses({income,expenses,theme}){
 		}
 		setSort({type:type,d:newD})
 		if(type === "amount"){
-			setExpensesList(sortByAmount(expensesList,newD))
+			setExpensesList(sortByStatus(sortByAmount(expensesList,newD)))
 		}
 		else if(type === "priority"){
-			setExpensesList(sortByPriority(expensesList,newD))
+			setExpensesList(sortByStatus(sortByPriority(expensesList,newD)))
 		}else if(type === "name"){
-			setExpensesList(sortByName(expensesList,newD))
+			setExpensesList(sortByStatus(sortByName(expensesList,newD)))
 		}else if(type === "fixed"){
-			setExpensesList(sortByFixed(expensesList,newD))
+			setExpensesList(sortByStatus(sortByFixed(expensesList,newD)))
 		}
+		setLength(type+""+d)
 		
 	}
 
@@ -50,21 +54,15 @@ export default function Expenses({income,expenses,theme}){
 		if(id === "fixed")setNewExpenses({...newExpenses,fixed:e.target.checked})
 		if(id === "priority")setNewExpenses({...newExpenses,priority:e.target.value})
 		if(id === "amount")setNewExpenses({...newExpenses,amount:e.target.value})
-		console.log(e.target.value)
 	}
 
 	const handleAddExpenses = (e) => {
 		const n_expenses = expensesList;
 		let date = new Date()
 		date  = date.valueOf()
-		if(typeof newExpenses.amount === 'object'){
-			const n_expanded = expanded
-			n_expanded[date] = false
-			setExpanded(n_expanded)
-		}
 		n_expenses.unshift({...newExpenses,date:date})
-		setExpensesList(getStatus(income,n_expenses).expenses);
-		setNewExpenses({...newExpenses,fixed:true})
+		setExpensesList(n_expenses);
+		setNewExpenses({name:"",fixed:false,priority:2,amount:0})
 		setLength(n_expenses.length)
 		handleSubmit()
 	}
@@ -78,7 +76,7 @@ export default function Expenses({income,expenses,theme}){
 		if(id === "amount")expenses[i].amount = e.target.value
 
 
-		setExpensesList(getStatus(income,expenses).expenses);
+		setExpensesList(expenses);
 		setLength(expenses.length)
 		handleSubmit()
 	}
@@ -88,7 +86,7 @@ export default function Expenses({income,expenses,theme}){
 		
 		expenses.splice(i,1)
 		
-		setExpensesList(getStatus(income,expenses).expenses);
+		setExpensesList(expenses);
 		setLength(expenses.length)
 		handleSubmit()
 	}
@@ -170,24 +168,14 @@ export default function Expenses({income,expenses,theme}){
 		tempExpenses(expensesList);
 	}
 
-	const expand = (date) => {
-		const n_expanded = expanded
-		if(n_expanded[date]){
-			n_expanded[date] = false
-			setExpanded(n_expanded)
-		}else{
-			n_expanded[date] = true
-			setExpanded(n_expanded)
-		}
-		setLength(date+n_expanded[date])
-	}
+
 
 	const editExpChange = (e,i,a) => {
 		const expenses = expensesList
 		if(e.target.id === "name")expenses[i].amount[a].name = e.target.value
 		if(e.target.id === "amount")expenses[i].amount[a].amount = e.target.value
 		
-		setExpensesList(getStatus(income,expenses).expenses);
+		setExpensesList(expenses);
 		setLength(e.target.value)
 		handleSubmit()
 	}
@@ -202,7 +190,7 @@ export default function Expenses({income,expenses,theme}){
 			n_expenses[i].amount = getTotal(n_expenses[i].amount)
 		}
 		
-		setExpensesList(getStatus(income,n_expenses).expenses);
+		setExpensesList(n_expenses);
 		setLength(typeof n_expenses[i].amount.length || 0)
 		handleSubmit()
 	}
@@ -219,85 +207,12 @@ export default function Expenses({income,expenses,theme}){
 		if(expenses[i].amount.length === 0){
 			expenses[i].amount = total;
 		}
-		setExpensesList(getStatus(income,expenses).expenses);
+		setExpensesList(expenses);
 		setLength(expenses[i].amount.length || 0)
 		handleSubmit()
 	}
 
 //UI code starts from here
-	const item = (expenses,i) => {
-		return (
-		<div className={"row "+(i%2===0 ? "" : "even ")+(expenses.error ? "error ":"")+(expenses.outdated ? "outdated ":"")}
-			key={i+""+expenses.date+""+expenses.name}>
-				<div className="column " >
-					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} error={expenses.error} defaultValue={expenses.name} 
-					variant="standard" required/>
-				</div>
-				<div className="column center " >
-					<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={expenses.fixed} 
-					required/>
-				</div>
-				<div className="column">
-				  <Select defaultValue={expenses.priority} error={expenses.error} variant="standard" onChange={(e)=>handleChange(e,"priority",i)}>
-					<MenuItem value="2">High</MenuItem>
-					<MenuItem value="1">Medium</MenuItem>
-					<MenuItem value="0">Low</MenuItem>
-				  </Select>
-				</div>
-				<div className={"column "+(expenses.suberror ? 'switch' :'')}>
-				{typeof expenses.amount !== "object" ?
-				<>
-					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} error={expenses.error} defaultValue={expenses.amount} 
-					type="number" variant="standard" required
-						 InputProps={{
-							startAdornment: <InputAdornment position="start">$</InputAdornment>,
-					}} />
-				</>
-				: <>
-					<IconButton size="small" color="primary" onClick={()=>expand(expenses.date)} >
-						{ !expanded[expenses.date] ? <ExpandMore/> : <ExpandLess/>}
-					</IconButton>
-					<span>{getTotal(expenses.amount)}</span>
-				</>}
-			</div>
-			<div className="column ">
-				<IconButton size="small" aria-label="more" onClick={(e)=>handleClick(e,expenses,i)}>
-					<MoreVert/>
-				</IconButton>
-			</div>
-			{(typeof expenses.amount === 'object') && expanded[expenses.date] ?
-			<div className="expanded">
-			{expenses.amount.map((amount,a)=>{
-				return (
-					<div className={"item "+(amount.error && expenses.error ? 'error' : '')} key={i+""+amount.date}>
-						<div className="row">
-							<span className="label">Name</span>
-							<TextField id="name" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error&& expenses.error} 
-							defaultValue={amount.name} size="large" variant="standard" required/>
-						</div>
-						<div className="row">
-							<span className="label">Amount</span>
-							<TextField id="amount" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error&& expenses.error} 
-							defaultValue={amount.amount} type="number" variant="standard" required
-							 InputProps={{
-								startAdornment: <InputAdornment position="start">$</InputAdornment>,
-							  }} />
-						</div>
-						<div className="row expand">
-							<IconButton size="small" variant="contained" color="primary" onClick={()=>{editExpAdd(i,a,true)}}><AddCircle/></IconButton>
-						</div>
-						<div className="row expand">
-							<IconButton size="small" variant="contained" color="error" onClick={()=>{editExpAdd(i,a,false)}}>
-								<RemoveCircle/>
-							</IconButton>
-						</div>
-					</div>
-				)})}
-			</div>
-			: ""}
-			</div>
-		)
-	}
 
 	const Expanded = (amount,i) => {
 		return (
@@ -429,10 +344,10 @@ export default function Expenses({income,expenses,theme}){
 								<InputLabel shrink htmlFor="select-multiple-native">
 								  Priority
 								</InputLabel>
-							  <Select defaultValue="2" onChange={(e)=>handleExpenses(e,"priority")} label="Priority" size="small" required>
-								<MenuItem value="2">High</MenuItem>
-								<MenuItem value="1">Medium</MenuItem>
-								<MenuItem value="0">Low</MenuItem>
+							  <Select defaultValue={2} onChange={(e)=>handleExpenses(e,"priority")} label="Priority" size="small" required>
+								<MenuItem value={2}>High</MenuItem>
+								<MenuItem value={1}>Medium</MenuItem>
+								<MenuItem value={0}>Low</MenuItem>
 							  </Select>
 						  </FormControl>
 					</div>
@@ -486,9 +401,10 @@ export default function Expenses({income,expenses,theme}){
 					</span>
 					<span className="label"></span>
 				</div>
-				{sortByStatus(expensesList).map((expenses,i)=>{
+				{(expensesList).map((expenses,i)=>{
 					return (
-							item(expenses,i)
+							<Item expenses={expenses} i={i} key={i+""+expenses.date+""+expenses.name}
+							handleChange={handleChange} editExpChange={editExpChange} editExpAdd={editExpAdd} handleClick={handleClick}/>
 						)
 				})}
 			</div>
@@ -505,3 +421,76 @@ export default function Expenses({income,expenses,theme}){
 	)
 }
 
+function Item({expenses,i,handleChange,editExpChange,editExpAdd,handleClick}){
+	const [expand,setExpand] = useState(false)
+
+	return (
+	<div className={"row "+(i%2===0 ? "" : "even ")+(expenses.error ? "error ":"")+(expenses.outdated ? "outdated ":"")}>
+			<div className="column " >
+				<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} error={expenses.error} defaultValue={expenses.name}  required/>
+			</div>
+			<div className="column center " >
+				<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={expenses.fixed} 
+				required/>
+			</div>
+			<div className="column">
+			  <Select size="small" defaultValue={expenses.priority} error={expenses.error} onChange={(e)=>handleChange(e,"priority",i)}>
+				<MenuItem value={2}>High</MenuItem>
+				<MenuItem value={1}>Medium</MenuItem>
+				<MenuItem value={0}>Low</MenuItem>
+			  </Select>
+			</div>
+			<div className={"column "+(expenses.suberror ? 'switch' :'')}>
+			{typeof expenses.amount !== "object" ?
+			<>
+				<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} error={expenses.error} defaultValue={expenses.amount} 
+				type="number" required
+					 InputProps={{
+						startAdornment: <InputAdornment position="start">$</InputAdornment>,
+				}} />
+			</>
+			: <>
+				<IconButton size="small" color="primary" onClick={()=>setExpand(!expand)} >
+					{ !expand ? <ExpandMore/> : <ExpandLess/>}
+				</IconButton>
+				<span>{getTotal(expenses.amount)}</span>
+			</>}
+		</div>
+		<div className="column end">
+			<IconButton size="small" aria-label="more" onClick={(e)=>handleClick(e,expenses,i)}>
+				<MoreVert/>
+			</IconButton>
+		</div>
+		{(typeof expenses.amount === 'object') && expand ?
+		<div className="expanded">
+		{expenses.amount.map((amount,a)=>{
+			return (
+				<div className={"item "+(amount.error && expenses.error ? 'error' : '')} key={i+""+amount.date}>
+					<div className="row">
+						<span className="label">Name</span>
+						<TextField id="name" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error && expenses.error} 
+						defaultValue={amount.name} size="small" required/>
+					</div>
+					<div className="row">
+						<span className="label">Amount</span>
+						<TextField id="amount" onChange={(e)=>{editExpChange(e,i,a)}} error={amount.error && expenses.error} 
+						defaultValue={amount.amount} type="number" size="small" required
+						 InputProps={{
+							startAdornment: <InputAdornment position="start">$</InputAdornment>,
+						  }} />
+					</div>
+					<div className="row expand">
+						<IconButton size="small" variant="contained" color="primary" onClick={()=>{editExpAdd(i,a,true)}}><AddCircle/></IconButton>
+					</div>
+					<div className="row expand">
+						<IconButton size="small" variant="contained" color="error" onClick={()=>{editExpAdd(i,a,false)}}>
+							<RemoveCircle/>
+						</IconButton>
+					</div>
+				</div>
+			)})}
+		</div>
+		: ""}
+		</div>
+	)
+}

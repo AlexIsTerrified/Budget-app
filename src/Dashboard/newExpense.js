@@ -1,13 +1,13 @@
 import { useState} from 'react'
 import {TextField,InputAdornment,InputLabel,Switch,Button,IconButton,Select,MenuItem,FormControl} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
-import {tempExpenses,editExpenses} from '../Functions/functions'
+import {tempExpenses} from '../Functions/functions'
 import {getTotal}from '../Functions/calculations'
 
 export default function NewExpenses(){
 	const [expensesList,setexpensesList] = useState([])
 	const [length,setLength] = useState(expensesList.length)
-	const [newExpense, setNewExpenses] = useState({name:'Rent',fixed:true,priority:2,amount:1000});
+	const [newExpense, setNewExpenses] = useState({name:'Rent',fixed:false,priority:2,amount:1000});
 	const [expanded,setExpanded] = useState({})
 	
 	const handleExpenses = (e,id) => {
@@ -29,8 +29,7 @@ export default function NewExpenses(){
 		
 		n_expenses.unshift({...newExpense,date:date})
 		setexpensesList(n_expenses)
-		setNewExpenses({...newExpense,fixed:true})
-		setNewExpenses({name:'Rent',fixed:true,priority:2,amount:1000})
+		setNewExpenses({...newExpense})
 		setLength(n_expenses.length)
 		handleSubmit()
 	}
@@ -103,7 +102,6 @@ export default function NewExpenses(){
 	}
 
 	const handleSync = () => {
-		editExpenses(expensesList);
 		document.getElementById("hidden").click()
 	}
 	
@@ -174,9 +172,9 @@ export default function NewExpenses(){
 			</div>
 			<div className="column">
 				  <Select defaultValue={expense.priority} variant="standard" onChange={(e)=>handleChange(e,"priority",i)}>
-					<MenuItem value="2">High</MenuItem>
-					<MenuItem value="1">Medium</MenuItem>
-					<MenuItem value="0">Low</MenuItem>
+					  	<MenuItem value={2}>High</MenuItem>
+						<MenuItem value={1}>Medium</MenuItem>
+						<MenuItem value={0}>Low</MenuItem>
 				  </Select>
 			</div>
 			<div className="column">
@@ -266,7 +264,6 @@ export default function NewExpenses(){
 			<div className="form">
 				<div className="top">
 					<div className="row">
-						<span className="label">Name</span>
 						<TextField onChange={(e)=>handleExpenses(e,"name")} label="Name" defaultValue="Rent" size="small" variant="outlined" required/>
 					</div>
 					<div className="row center">
@@ -278,10 +275,10 @@ export default function NewExpenses(){
 								<InputLabel shrink htmlFor="select-multiple-native">
 								  Priority
 								</InputLabel>
-							  <Select defaultValue="2"onChange={(e)=>handleExpenses(e,"priority")} label="Priority" size="small" required>
-								<MenuItem value="2">High</MenuItem>
-								<MenuItem value="1">Medium</MenuItem>
-								<MenuItem value="0">Low</MenuItem>
+							  <Select defaultValue={2} onChange={(e)=>handleExpenses(e,"priority")} label="Priority" size="small" required>
+								<MenuItem value={2}>High</MenuItem>
+								<MenuItem value={1}>Medium</MenuItem>
+								<MenuItem value={0}>Low</MenuItem>
 							  </Select>
 						  </FormControl>
 					</div>

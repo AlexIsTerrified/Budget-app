@@ -1,5 +1,5 @@
 import {useState,useEffect} from 'react'
-import {NavLink as Link} from 'react-router-dom'
+import {NavLink as Link,useLocation} from 'react-router-dom'
 import {Switch,FormControl, Tooltip,Zoom} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {AccountBalanceWallet,Receipt,Dashboard,ManageAccounts} from '@mui/icons-material';
@@ -7,6 +7,8 @@ import {setDarkMode,darkMode} from './Functions/functions'
 
 export default function App(){
 	const [width,setWidth] = useState(window.innerWidth)
+	const [loc,setLoc] = useState("")
+	const location = useLocation()
 
   useEffect(()=>{
     window.addEventListener("resize",()=>{
@@ -17,7 +19,8 @@ export default function App(){
 	
 	return (
 		<div className="nav">
-			<div className="start">
+			<div className={"start "+(location.pathname.substring(1) || 'home')}>
+				<div className="lighted"></div>
 				<Link to="">
 					<div className="item">
             <Tooltip title="Dashboard" TransitionComponent={Zoom} placement={width <= 640 ? "top" : "right-start"} arrow>

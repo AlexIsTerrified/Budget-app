@@ -22,8 +22,8 @@ export function renderExpense(target){
               });
             await worker.loadLanguage('eng');
             await worker.initialize('eng');
-            const { data: { text } } = await worker.recognize(image);
-            console.log(text);
+            const data = await worker.recognize(image);
+            console.log(data);
             await worker.terminate();
             })();
         }

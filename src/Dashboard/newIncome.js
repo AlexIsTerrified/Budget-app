@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import {TextField,InputAdornment,Switch,IconButton,Button} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
-import {tempIncome,editIncome} from '../Functions/functions'
+import {tempIncome} from '../Functions/functions'
 import {getTotal}from '../Functions/calculations'
 
 export default function NewIncome({income}){
@@ -97,7 +97,6 @@ export default function NewIncome({income}){
 	}
 
 	const handleSync = () => {
-		editIncome(incomeList);
 		document.getElementById("hidden").click()
 	}
 
@@ -160,7 +159,7 @@ export default function NewIncome({income}){
 	const item = (income,i) => {
 		return (<div className={"row "+(i%2===0 ? "" : "even")} key={i+""+income.date+""+income.name}>
 				<div className="column " >
-					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={income.name} variant="standard" required/>
+					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} defaultValue={income.name} required/>
 				</div>
 				<div className="column " >
 					<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={income.fixed} required/>
@@ -171,7 +170,7 @@ export default function NewIncome({income}){
 					<IconButton size="small" onClick={()=>editExpand(i)}>
 						<ExpandMore/>
 					</IconButton>
-					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} defaultValue={income.amount} type="number" variant="standard" required
+					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} defaultValue={income.amount} type="number" required
 						 InputProps={{
 							startAdornment: <InputAdornment position="start">$</InputAdornment>,
 					}} />
@@ -193,11 +192,11 @@ export default function NewIncome({income}){
 					<div className="item" key={i+""+amount.date}>
 						<div className="row">
 							<span className="label">Name</span>
-							<TextField id="name" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.name} size="large" variant="standard" required/>
+							<TextField id="name" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.name} size="small" required/>
 						</div>
 						<div className="row">
 							<span className="label">Amount</span>
-							<TextField id="amount" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.amount} type="number" variant="standard" required
+							<TextField id="amount" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.amount} type="number" size="small" required
 							 InputProps={{
 								startAdornment: <InputAdornment position="start">$</InputAdornment>,
 							  }} />

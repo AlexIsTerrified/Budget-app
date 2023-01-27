@@ -22,6 +22,10 @@ export default function Income({income,theme}){
 
 	const location = useLocation();
 	
+	useEffect(()=>{
+		setIncomeList(income)
+	},[income])
+
 	const handleSort = (type,d) =>{
 		let newD = d
 		if(type === sort.type){
@@ -58,7 +62,7 @@ export default function Income({income,theme}){
 		}
 		n_income.unshift({...newIncome,date:date})
 		setIncomeList(n_income);
-		setNewIncome({...newIncome,fixed:true})
+		setNewIncome({name:"",fixed:false,amount:0})
 		setLength(n_income.length)
 		handleSubmit()
 	}
@@ -219,16 +223,16 @@ export default function Income({income,theme}){
 		key={i+""+income.date+""+income.name}>
 				<div className="column " >
 					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} error={income.error} defaultValue={income.name} 
-					variant="standard" required/>
+					 required/>
 				</div>
-				<div className="column " >
+				<div className="column center" >
 					<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={income.fixed} required/>
 				</div>
 				<div className="column">
 				{typeof income.amount !== "object" ?
 				<>
 					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} error={income.error} defaultValue={income.amount} 
-					type="number" variant="standard" required
+					type="number" required
 						 InputProps={{
 							startAdornment: <InputAdornment position="start">$</InputAdornment>,
 					}} />
@@ -240,7 +244,7 @@ export default function Income({income,theme}){
 					<span>{getTotal(income.amount)}</span>
 				</>}
 			</div>
-			<div className="column ">
+			<div className="column end">
 				<IconButton size="small" aria-label="more" onClick={(e)=>handleClick(e,income,i)}>
 					<MoreVert/>
 				</IconButton>
@@ -252,11 +256,11 @@ export default function Income({income,theme}){
 					<div className="item" key={i+""+amount.date}>
 						<div className="row">
 							<span className="label">Name</span>
-							<TextField id="name" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.name} size="large" variant="standard" required/>
+							<TextField id="name" size="small" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.name} required/>
 						</div>
 						<div className="row">
 							<span className="label">Amount</span>
-							<TextField id="amount" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.amount} type="number" variant="standard" required
+							<TextField id="amount" size="small" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.amount} type="number" required
 							 InputProps={{
 								startAdornment: <InputAdornment position="start">$</InputAdornment>,
 							  }} />

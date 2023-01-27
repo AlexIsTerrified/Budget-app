@@ -1,3 +1,4 @@
+import {useState,useEffect} from 'react'
 import { useTheme} from '@mui/material/styles';
 import {Error,CheckCircle, CheckCircleSharp} from '@mui/icons-material';
 import {NavLink as Link} from 'react-router-dom'
@@ -7,9 +8,16 @@ import NewExpenses from './newExpense'
 import {getTotal,sortByStatus,sortByAmount,donutInputs,areaInputs, sortByPriority,ifOutdated}from '../Functions/calculations'
 
 
-export default function Dashboard({income,expenses,theme}){
+export default function Dashboard({incomeList,expensesList,theme}){
+	const [income,setIncome] = useState(incomeList)
+	const [expenses,setExpenses] = useState(expensesList)
+
+	useEffect(()=>{
+		setIncome(income)
+		setExpenses(expenses)
+	},[income,expenses])
 	
-	if(income === false || expenses === false || income === null || expenses === null)return (
+	if(income == false || expenses == false || income == null || expenses == null)return (
 		<div className={"start-form "+(income != false ? "next" : "")}>
 			<NewIncome income={income}/>
 			<NewExpenses/>
@@ -130,6 +138,7 @@ export default function Dashboard({income,expenses,theme}){
 						if(sub.error)
 						suberrors.push(sub)
 					})
+					console.log(expense)
 				}
 				errors.unshift(expense)
 			}

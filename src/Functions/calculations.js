@@ -101,6 +101,16 @@ export function ifOutdated(data){
 	return outdated
 }
 
+export function checkForChanges(data,oldData){
+	const dataString = JSON.stringify(sortByAmount(data))
+	const oldDataString = JSON.stringify(sortByAmount(oldData))
+	if(dataString.normalize() != oldDataString.normalize()){
+		return false
+	}else{
+		return true
+	}
+}
+
 export function updateDate(newData,data){
 	let returnData = newData
 	let date = new Date()
@@ -110,32 +120,31 @@ export function updateDate(newData,data){
 			item.date = date
 			return item
 		})
-	}else{
-		returnData = returnData.map((item)=>{
-			let newItem = item
-			let itemString = JSON.stringify(item)
-			let isDifferent = true
-			delete newItem.outdated
-			delete newItem.error
-			delete newItem.suberror
-			if(typeof newItem.amount === 'object'){
-				newItem.amount = newItem.amount.map((am,i)=>{
-					delete am.error
-					return am
-				})
-			}
-			data.forEach((oldItem)=>{
-				let oldString = JSON.stringify(oldItem)
-				if(itemString.normalize() === oldString.normalize()){
-					isDifferent = false
-				}
-			})
-			if(isDifferent){
-				newItem.date = date
-			}
-			return newItem 
-		})
 	}
+	returnData = returnData.map((item)=>{
+		let newItem = item
+		let itemString = JSON.stringify(item)
+		let isDifferent = true
+		delete newItem.outdated
+		delete newItem.error
+		delete newItem.suberror
+		if(typeof newItem.amount === 'object'){
+			newItem.amount = newItem.amount.map((am,i)=>{
+				delete am.error
+				return am
+			})
+		}
+		data.forEach((oldItem)=>{
+			let oldString = JSON.stringify(oldItem)
+			if(itemString.normalize() === oldString.normalize()){
+				isDifferent = false
+			}
+		})
+		if(isDifferent){
+			newItem.date = date
+		}
+		return newItem 
+	})
 
 	return returnData
 }
@@ -242,10 +251,30 @@ export function areaInputs(expensesTotal,incomeTotal,history){
 	return {xaxis:xaxis,income:income,expenses:expenses}
 }
 
-export function reorder(list, startIndex, endIndex){
-	const result = Array.from(list);
-	const [removed] = result.splice(startIndex, 1);
-	result.splice(endIndex, 0, removed);
-  
-	return result;
-  };
+export function correctStringErrors(data){
+	try{
+		let newData = JSON.parse(data)
+		if(typeof newData === 'object'){
+			let returnData = newData.map((item,i)=>{
+				let newItem = item
+				if(typeof item.name !== 'string'){
+					newItem.name = ""
+				}else if(typeof item.fixed !== 'boolean'){
+					newItem.fixed = false
+				}else if(typeof item.priority !== 'number' || (item.priority < 0 || item.priority > 2) ){
+					newItem.priority = 0
+				}else if(typeof item.amount !== 'object' && typeof item.amount !== 'string' && typeof item.amount !== 'number'){
+					newItem.amount = 0
+				}
+				return newItem
+			})
+			return returnData
+		}else{
+			return null
+		}
+	}catch(e){
+		console.log('ajjj')
+		return null
+	}
+}
+
