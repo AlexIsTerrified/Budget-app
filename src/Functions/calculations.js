@@ -1,3 +1,5 @@
+import { ConstructionOutlined } from "@mui/icons-material";
+
 export function getTotal(data){
 	let total = 0;
 	if(typeof data === 'object'){
@@ -20,8 +22,10 @@ export function getTotal(data){
 }
 
 export function getStatus(income,expenses){
+	let newIncome = [...income]
+	let newExpenses = [...expenses]
 	const currDate = new Date()
-	let newIncome = income.map((item)=>{
+	newIncome = income.map((item)=>{
 		const newItem = item
 		const date = new Date(item.date)
 		if(!item.fixed){
@@ -35,10 +39,9 @@ export function getStatus(income,expenses){
 		}
 		return newItem
 	})
-	let newExpenses = expenses.map((item)=>{
+	newExpenses = expenses.map((item)=>{
 		const newItem = item
 		const date = new Date(item.date)
-
 		if(!item.fixed){
 			if(date.getMonth() !== currDate.getMonth()){
 				newItem.outdated = true
@@ -56,11 +59,10 @@ export function getStatus(income,expenses){
 	const expensesTotal = getTotal(newExpenses)
 	let total = expensesTotal
 	newExpenses = sortByAmount(newExpenses,true)
-	newExpenses = sortByPriority(newExpenses,true)
+	newExpenses =  sortByPriority(newExpenses,true)
 	newExpenses = newExpenses.map((item)=>{
-		const newItem = item
+		const newItem =  item
 		if(incomeTotal < total){
-			
 			newItem.error = true
 			if(typeof item.amount === 'object' && incomeTotal > total - (typeof item.amount !== 'object' ? Number(item.amount) : getTotal(item.amount))){
 				newItem.suberror = true
@@ -87,7 +89,8 @@ export function getStatus(income,expenses){
 		}
 		return newItem
 	})
-	return {income:newIncome, expenses:newExpenses}
+	//console.log({income:sortByAmount(newIncome), expenses:sortByAmount(newExpenses)})
+	return {income:sortByAmount(newIncome), expenses:sortByAmount(newExpenses)}
 }
 
 export function ifOutdated(data){
@@ -101,57 +104,57 @@ export function ifOutdated(data){
 	return outdated
 }
 
-export function checkForChanges(data,oldData){
-	const dataString = JSON.stringify(sortByAmount(data))
-	const oldDataString = JSON.stringify(sortByAmount(oldData))
-	if(dataString.normalize() != oldDataString.normalize()){
-		return false
-	}else{
-		return true
-	}
-}
-
-export function updateDate(newData,data){
-	let returnData = newData
-	let date = new Date()
-	date = date.valueOf()
-	if(data != false && data != null ){
-		returnData = returnData.map(item=>{
-			item.date = date
-			return item
-		})
-	}
-	returnData = returnData.map((item)=>{
-		let newItem = item
-		let itemString = JSON.stringify(item)
-		let isDifferent = true
-		delete newItem.outdated
-		delete newItem.error
-		delete newItem.suberror
-		if(typeof newItem.amount === 'object'){
-			newItem.amount = newItem.amount.map((am,i)=>{
-				delete am.error
-				return am
-			})
-		}
-		data.forEach((oldItem)=>{
-			let oldString = JSON.stringify(oldItem)
-			if(itemString.normalize() === oldString.normalize()){
-				isDifferent = false
+export function updateDate(newData,data=["0"]){
+	try{
+		let returnData = newData
+		let date = new Date()
+		date = date.valueOf()
+		returnData = returnData.map((item)=>{
+			let newItem = item
+			let isDifferent = true
+			delete newItem.outdated
+			delete newItem.error
+			delete newItem.suberror
+			if(typeof newItem.amount === 'object'){
+				newItem.amount = newItem.amount.map((am,i)=>{
+					delete am.error
+					return am
+				})
 			}
+			data.forEach((oldItem)=>{
+				if(newItem.name === oldItem.name && 
+					JSON.stringify(newItem.amount) === JSON.stringify(oldItem.amount) && 
+					newItem.fixed === oldItem.fixed && 
+					newItem.priority === oldItem.priority){
+						isDifferent = false
+				}
+			})
+			if(isDifferent){
+				newItem.date = date
+			}
+			return newItem 
 		})
-		if(isDifferent){
-			newItem.date = date
-		}
-		return newItem 
-	})
-
-	return returnData
+		return returnData
+	}catch(e){
+		return newData
+	}
 }
 
-export function sortByStatus(data){
-	let newData = data.sort((a,b)=>b.outdated-a.outdated)
-	newData = newData.sort((a,b)=>b.error-a.error)
+export function sortByStatus(data,d=false){
+	let newData = data.sort((a,b)=>{
+		if(d){
+			return a.outdated-b.outdated
+		}else{
+			return b.outdated-a.outdated
+		}
+	})
+	newData = newData.sort((a,b)=>{
+		if(d){
+			return a.error-b.error
+		}else{
+			return b.error-a.error
+		}
+	})
 
 	return newData
 
@@ -224,6 +227,7 @@ export function areaInputs(expensesTotal,incomeTotal,history){
 	const xaxis = []
 	const income = []
 	const expenses = []
+	const n_history = [...history || []]
 	
 	let today = new Date()
 	today = today.getMonth()
@@ -239,9 +243,10 @@ export function areaInputs(expensesTotal,incomeTotal,history){
 		if(i==0){
 			income[5] = incomeTotal
 			expenses[5] = expensesTotal
-		}else if(history.length != 0){
-			income[5-i] = history.pop().income
-			expenses[5-i] = history.pop().expenses
+		}else if(n_history.length > 0){
+			const n = n_history.pop()
+			income[5-i] = n.income
+			expenses[5-i] = n.expenses
 		}else{
 			income[5-i] = 0
 			expenses[5-i] = 0
@@ -253,9 +258,9 @@ export function areaInputs(expensesTotal,incomeTotal,history){
 
 export function correctStringErrors(data){
 	try{
-		let newData = JSON.parse(data)
-		if(typeof newData === 'object'){
-			let returnData = newData.map((item,i)=>{
+		if(data.charAt(0) == "[" && data.charAt(data.length-1) == "]"){
+			const newData = JSON.parse(data)
+			let returnData = JSON.parse(data).map((item,i)=>{
 				let newItem = item
 				if(typeof item.name !== 'string'){
 					newItem.name = ""
@@ -273,8 +278,18 @@ export function correctStringErrors(data){
 			return null
 		}
 	}catch(e){
-		console.log('ajjj')
 		return null
 	}
 }
 
+export function historyUpdate(history,data){
+	const n_history = history
+	const n_data = data
+	if(n_history.length>=11){
+		n_history.shift()
+		n_history.push(n_data)
+	}else{
+		n_history.push(n_data)
+	}
+	return n_history
+}

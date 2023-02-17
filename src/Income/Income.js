@@ -3,15 +3,14 @@ import {Select,TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,D
 	FormControl,InputLabel} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,ArrowDropUp} from '@mui/icons-material';
 import {useLocation} from 'react-router-dom'
-import {tempIncome,editIncome} from '../Functions/functions'
+import {setTempData} from '../Functions/functions'
 import {getTotal,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
 
-export default function Income({income,theme}){
+export default function Income({income,expenses,theme}){
 	const [incomeList,setIncomeList] = useState(income || [])
 	const [sort,setSort] = useState({type:"amount",d:false})
-	const [length,setLength] = useState(incomeList.length)
+	const [length,setLength] = useState(incomeList.length || 0)
 	const [newIncome, setNewIncome] = useState({name:'',fixed:false,amount:0})
-	const [expanded,setExpanded] = useState({})
 	const [menuIncome,setMenuIncome] = useState({});
 	const [menu,setMenu] = useState(0);
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -55,11 +54,6 @@ export default function Income({income,theme}){
 		const n_income = incomeList;
 		let date = new Date()
 		date  = date.valueOf()
-		if(typeof newIncome.amount === 'object'){
-			const n_expanded = expanded
-			n_expanded[date] = false
-			setExpanded(n_expanded)
-		}
 		n_income.unshift({...newIncome,date:date})
 		setIncomeList(n_income);
 		setNewIncome({name:"",fixed:false,amount:0})
@@ -159,19 +153,7 @@ export default function Income({income,theme}){
 	}
 
 	const handleSubmit = () => {
-		tempIncome(incomeList);
-	}
-
-	const expand = (date) => {
-		const n_expanded = expanded
-		if(n_expanded[date]){
-			n_expanded[date] = false
-			setExpanded(n_expanded)
-		}else{
-			n_expanded[date] = true
-			setExpanded(n_expanded)
-		}
-		setLength(date+n_expanded[date])
+		setTempData(incomeList,expenses);
 	}
 
 	const editExpChange = (e,i,a) => {
@@ -218,70 +200,6 @@ export default function Income({income,theme}){
 
 
 //UI code starts from here
-	const item = (income,i) => {
-		return (<div className={"row "+(i%2===0 ? "" : "even ")+(income.error ? "error ":"")+(income.outdated ? "outdated ":"")} 
-		key={i+""+income.date+""+income.name}>
-				<div className="column " >
-					<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} error={income.error} defaultValue={income.name} 
-					 required/>
-				</div>
-				<div className="column center" >
-					<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={income.fixed} required/>
-				</div>
-				<div className="column">
-				{typeof income.amount !== "object" ?
-				<>
-					<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} error={income.error} defaultValue={income.amount} 
-					type="number" required
-						 InputProps={{
-							startAdornment: <InputAdornment position="start">$</InputAdornment>,
-					}} />
-				</>
-				: <>
-					<IconButton size="small" color="primary" onClick={()=>expand(income.date)}>
-						{ !expanded[income.date] ? <ExpandMore/> : <ExpandLess/>}
-					</IconButton>
-					<span>{getTotal(income.amount)}</span>
-				</>}
-			</div>
-			<div className="column end">
-				<IconButton size="small" aria-label="more" onClick={(e)=>handleClick(e,income,i)}>
-					<MoreVert/>
-				</IconButton>
-			</div>
-				{(typeof income.amount === 'object') && expanded[income.date] ?
-			<div className="expanded">
-			{income.amount.map((amount,a)=>{
-				return (
-					<div className="item" key={i+""+amount.date}>
-						<div className="row">
-							<span className="label">Name</span>
-							<TextField id="name" size="small" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.name} required/>
-						</div>
-						<div className="row">
-							<span className="label">Amount</span>
-							<TextField id="amount" size="small" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.amount} type="number" required
-							 InputProps={{
-								startAdornment: <InputAdornment position="start">$</InputAdornment>,
-							  }} />
-						</div>
-						<div className="row expand">
-							<IconButton size="small" variant="contained" color="primary" onClick={()=>{editExpAdd(i,a,true)}}><AddCircle/></IconButton>
-						</div>
-						<div className="row expand">
-							<IconButton size="small" variant="contained" color="error" onClick={()=>{editExpAdd(i,a,false)}}>
-								<RemoveCircle/>
-							</IconButton>
-						</div>
-					</div>
-				)
-			})}
-			</div> 
-			: ""}
-			</div>
-		)
-	}
-
 	const Expanded = (amount,i) => {
 		return (
 			<div className="item" key={i+""+amount.date}>
@@ -424,8 +342,9 @@ export default function Income({income,theme}){
 				</div>
 				{incomeList.map((income,i)=>{
 					return (
-							item(income,i)
-						)
+						<Item income={income} i={i} key={i+""+income.date+""+income.name}
+						handleChange={handleChange} editExpChange={editExpChange} editExpAdd={editExpAdd} handleClick={handleClick}/>
+					)
 				})}
 			</div>
 			: ""}
@@ -437,5 +356,70 @@ export default function Income({income,theme}){
 		<Deletedialog/>
 		<Changedialog/>
 	</div>
+	)
+}
+
+function Item({income,i,handleChange,editExpChange,editExpAdd,handleClick}){
+	const [expand,setExpand] = useState(false)
+
+	return (<div className={"row "+(i%2===0 ? "" : "even ")+(income.error ? "error ":"")+(income.outdated ? "outdated ":"")} >
+			<div className="column " >
+				<TextField size="small" onChange={(e)=>handleChange(e,"name",i)} error={income.error} defaultValue={income.name} 
+				 required/>
+			</div>
+			<div className="column center" >
+				<Switch size="small" onChange={(e)=>handleChange(e,"fixed",i)} color="primary" defaultChecked={income.fixed} required/>
+			</div>
+			<div className="column">
+			{typeof income.amount !== "object" ?
+			<>
+				<TextField size="small" onChange={(e)=>handleChange(e,"amount",i)} error={income.error} defaultValue={income.amount} 
+				type="number" required
+					 InputProps={{
+						startAdornment: <InputAdornment position="start">$</InputAdornment>,
+				}} />
+			</>
+			: <>
+				<IconButton size="small" color="primary" onClick={()=>setExpand(!expand)}>
+					{ !expand ? <ExpandMore/> : <ExpandLess/>}
+				</IconButton>
+				<span>{getTotal(income.amount)}</span>
+			</>}
+		</div>
+		<div className="column end">
+			<IconButton size="small" aria-label="more" onClick={(e)=>handleClick(e,income,i)}>
+				<MoreVert/>
+			</IconButton>
+		</div>
+			{(typeof income.amount === 'object') && expand ?
+		<div className="expanded">
+		{income.amount.map((amount,a)=>{
+			return (
+				<div className="item" key={i+""+amount.date}>
+					<div className="row">
+						<span className="label">Name</span>
+						<TextField id="name" size="small" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.name} required/>
+					</div>
+					<div className="row">
+						<span className="label">Amount</span>
+						<TextField id="amount" size="small" onChange={(e)=>{editExpChange(e,i,a)}} defaultValue={amount.amount} type="number" required
+						 InputProps={{
+							startAdornment: <InputAdornment position="start">$</InputAdornment>,
+						  }} />
+					</div>
+					<div className="row expand">
+						<IconButton size="small" variant="contained" color="primary" onClick={()=>{editExpAdd(i,a,true)}}><AddCircle/></IconButton>
+					</div>
+					<div className="row expand">
+						<IconButton size="small" variant="contained" color="error" onClick={()=>{editExpAdd(i,a,false)}}>
+							<RemoveCircle/>
+						</IconButton>
+					</div>
+				</div>
+			)
+		})}
+		</div> 
+		: ""}
+		</div>
 	)
 }

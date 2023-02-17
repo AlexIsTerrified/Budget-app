@@ -1,10 +1,10 @@
 import { useState} from 'react'
 import {TextField,InputAdornment,InputLabel,Switch,Button,IconButton,Select,MenuItem,FormControl} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
-import {tempExpenses} from '../Functions/functions'
+import {setTempData} from '../Functions/functions'
 import {getTotal}from '../Functions/calculations'
 
-export default function NewExpenses(){
+export default function NewExpenses({income,expenses}){
 	const [expensesList,setexpensesList] = useState([])
 	const [length,setLength] = useState(expensesList.length)
 	const [newExpense, setNewExpenses] = useState({name:'Rent',fixed:false,priority:2,amount:1000});
@@ -98,7 +98,8 @@ export default function NewExpenses(){
 	}
 	
 	const handleSubmit = () => {
-		tempExpenses(expensesList);
+		setTempData(income,expensesList);
+		document.getElementById("sync").click()
 	}
 
 	const handleSync = () => {

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState,useMemo} from 'react'
 import {Route,BrowserRouter as Router,Routes,NavLink as Link,useLocation, BrowserRouter} from 'react-router-dom'
 import { ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,18 +13,20 @@ import User from './User/User'
 import Login from './User/Login'
 import Register from './User/Register'
 import UserStatus from './UserStatus'
-import {fetchTempIncome,fetchTempExpenses,tempIncome,tempExpenses,fetchData,editData,darkMode,auth} from './Functions/functions'
-import { getStatus,sortByStatus,checkForChanges} from './Functions/calculations';
+import {fetchTempData,setTempData,setTempHistory,fetchData,editData,darkMode,auth,checkForChanges,updateForMonth} from './Functions/functions'
+import { getStatus,sortByStatus,updateDate} from './Functions/calculations';
 
 function App() {
 	const [income, setIncome] = useState([]);
 	const [expenses, setExpenses] = useState([]);
+	const [history, setHistory] = useState([]);
 	const [darkmode,setDarkmode] = useState(darkMode().set)
 	const [user,setUser] = useState(false)
 	const location = useLocation();
 	const [loc,setLoc] = useState(location.pathname)
 	const [loaded,setLoaded] = useState(false)
 	const [initLoaded,setInitLoaded] = useState(false)
+
 
 	const darkTheme = createTheme({
 		  palette: {
@@ -33,17 +35,24 @@ function App() {
 	});
 	
 	const updateState = () => {
-		if(checkForChanges(fetchTempExpenses(), expenses) || checkForChanges(fetchTempIncome(), income) || income ==[] || expenses == []){
-			let update = {income:fetchTempIncome(),expenses:fetchTempExpenses()}
-			if(update.income !== false && update.expenses !== false && update.income !== null && update.expenses !== null ){
-				update = getStatus(update.income,update.expenses)
-				console.log("status gotten")
+		let data = {...  fetchTempData()}
+		const change =  checkForChanges(data.income,data.expenses)
+		if(change){
+			editData(data.income,data.expenses,data.history)
+			if(data.income && data.expenses){
+				data = {...data,...getStatus(data.income,data.expenses)}
 			}
-			editData(update.income,update.expenses)
-			setIncome(update.income)
-			setExpenses(update.expenses)
-			console.log("state updated")
+			console.log("data updated",data)
+			 setIncome(data.income)
+			 setExpenses(data.expenses)
+			 //setHistory(data.history)
 		}
+	}
+
+	const syncRoutes = async () => {
+
+		
+	
 	}
 
 	const updateDarkMode = () => {
@@ -54,16 +63,18 @@ function App() {
 		setInitLoaded(false)
 	}
 
-	const initData = async ()=>{
-		let updateInfo =await fetchData()
-			if(updateInfo.income !== false && updateInfo.expenses !== false && updateInfo.income !== null && updateInfo.expenses !== null ){
-				updateInfo = getStatus(updateInfo.income,updateInfo.expenses)	
+	const initData =async ()=>{
+		let updateInfo ={... await fetchData()}
+			if(updateInfo.income && updateInfo.expenses ){
+				updateInfo = {...updateInfo,...await updateForMonth(updateInfo)	}
+				updateInfo = {...updateInfo,...getStatus(updateInfo.income,updateInfo.expenses)	}
 			}
-			tempIncome(updateInfo.income)
-			tempExpenses(updateInfo.expenses)
 			setIncome(updateInfo.income)
 			setExpenses(updateInfo.expenses)
-			console.log("initializing data")
+			setHistory(updateInfo.history)
+			setTempData(updateInfo.income,updateInfo.expenses)
+			setTempHistory(updateInfo.history)
+			console.log("initializing data",updateInfo)
 			setInitLoaded(true)
 			
 	}
@@ -103,7 +114,7 @@ function App() {
 	  if(!loaded || !initLoaded){
 		return (
 			<div className="loader">
-				<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+				<div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
 			</div>
 		)
 	  }
@@ -114,8 +125,8 @@ function App() {
 				<div className="main">
 					<UserStatus user={user}/>
 					<Routes>
-						<Route path="/" element={<Dashboard incomeList={income} expensesList={expenses} theme={darkmode}/>}/>
-						<Route path="/income" element={<Income income={income} theme={darkmode} />}/>
+						<Route path="/" element={<Dashboard income={income} expenses={expenses} theme={darkmode} history={history}/>}/>
+						<Route path="/income" element={<Income income={income} expenses={expenses} theme={darkmode} />}/>
 						<Route path="/expenses" element={<Expenses income={income} expenses={expenses}/>}/>
 						<Route path="/user" element={<User />}/>
 						{user == null ? <>
@@ -126,6 +137,7 @@ function App() {
 					</Routes>
 				</div>
 				<button id="hidden" className="hidden" onClick={updateState} />
+				<button id="sync" className="hidden" onClick={syncRoutes} />
 				<button id="loader" className="hidden" onClick={loadedReset} />
 				<button id="darkMode" className="hidden" onClick={updateDarkMode} />
 			</ThemeProvider>

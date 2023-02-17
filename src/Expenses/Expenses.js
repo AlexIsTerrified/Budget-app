@@ -3,14 +3,14 @@ import {Select,TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,D
 	FormControl,InputLabel,ListItemIcon,ListItemText} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,ArrowDropUp,FilterCenterFocus,CameraAlt,Attachment} from '@mui/icons-material';
 import {useLocation} from 'react-router-dom'
-import {tempExpenses,editExpenses} from '../Functions/functions'
+import {setTempData} from '../Functions/functions'
 import {getTotal,getStatus,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
 import {turnOffCamera, turnOnCamera,renderExpense} from '../Functions/InfoExtractor'
 
-export default function Expenses({expenses,theme}){
+export default function Expenses({income,expenses,theme}){
 	const [expensesList,setExpensesList] = useState(expenses || [])
 	const [sort,setSort] = useState({type:"amount",d:false})
-	const [length,setLength] = useState(expensesList.length)
+	const [length,setLength] = useState(expensesList.length || 0)
 	const [newExpenses, setNewExpenses] = useState({name:"",fixed:false,priority:2,amount:0})
 	const [menuExpenses,setMenuExpenses] = useState({});
 	const [menu,setMenu] = useState(0);
@@ -165,7 +165,7 @@ export default function Expenses({expenses,theme}){
 	}
 
 	const handleSubmit = () => {
-		tempExpenses(expensesList);
+		setTempData(income,expensesList);
 	}
 
 

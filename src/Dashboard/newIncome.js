@@ -1,10 +1,10 @@
 import {useEffect, useState} from 'react'
 import {TextField,InputAdornment,Switch,IconButton,Button} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess} from '@mui/icons-material';
-import {tempIncome} from '../Functions/functions'
+import {setTempData} from '../Functions/functions'
 import {getTotal}from '../Functions/calculations'
 
-export default function NewIncome({income}){
+export default function NewIncome({income,expenses}){
 	const [incomeList,setIncomeList] = useState(income || [])
 	const [length,setLength] = useState(incomeList.length)
 	const [newIncome, setNewIncome] = useState({name:'Salary',fixed:true,amount:1000})
@@ -93,7 +93,8 @@ export default function NewIncome({income}){
 	}
 
 	const handleSubmit = () => {
-		tempIncome(incomeList);
+		setTempData(incomeList,expenses);
+		document.getElementById("sync").click()
 	}
 
 	const handleSync = () => {

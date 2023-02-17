@@ -1,5 +1,3 @@
-import {useState,useEffect} from 'react'
-import { useTheme} from '@mui/material/styles';
 import {Error,CheckCircle, CheckCircleSharp} from '@mui/icons-material';
 import {NavLink as Link} from 'react-router-dom'
 import Chart from 'react-apexcharts'
@@ -8,19 +6,19 @@ import NewExpenses from './newExpense'
 import {getTotal,sortByStatus,sortByAmount,donutInputs,areaInputs, sortByPriority,ifOutdated}from '../Functions/calculations'
 
 
-export default function Dashboard({incomeList,expensesList,theme}){
-	const [income,setIncome] = useState(incomeList)
-	const [expenses,setExpenses] = useState(expensesList)
+export default function Dashboard({income,expenses,theme,history}){
+	//const [income,setIncome] = useState(incomeList)
+	//const [expenses,setExpenses] = useState(expensesList)
 
-	useEffect(()=>{
+	/*useEffect(()=>{
 		setIncome(income)
 		setExpenses(expenses)
-	},[income,expenses])
+	},[income,expenses])*/
 	
-	if(income == false || expenses == false || income == null || expenses == null)return (
-		<div className={"start-form "+(income != false ? "next" : "")}>
-			<NewIncome income={income}/>
-			<NewExpenses/>
+	if(income == null || expenses == null || income == false || expenses == false)return (
+		<div className={"start-form "+(income != null && income != false ? "next" : "")}>
+			<NewIncome income={income} expenses={expenses}/>
+			<NewExpenses income={income} expenses={expenses}/>
 		</div>
 	)
 	
@@ -71,8 +69,7 @@ export default function Dashboard({incomeList,expensesList,theme}){
 	}
 	
 	const Area = () => {
-		const area = areaInputs(expensesTotal,incomeTotal,[])
-	
+		const area = areaInputs(expensesTotal,incomeTotal,history)
 		const areaOptions = {
 						xaxis: {
 						  categories: area.xaxis
@@ -99,10 +96,6 @@ export default function Dashboard({incomeList,expensesList,theme}){
 						tooltip: {
 							theme: "dark"
 						  },
-						yaxis: {
-							min: 0,
-							tickAmount: 4
-						  }
 					  }
 					  
 		const areaSeries = [{
@@ -114,15 +107,6 @@ export default function Dashboard({incomeList,expensesList,theme}){
 								data: area.expenses
 							  } ]
 		return (<Chart options={areaOptions} series={areaSeries} type="area" />)
-	}
-	const showExpenses= () => {
-		const n_income = income
-		n_income.sort((a,b)=>b-a)
-		
-		return (<>
-			<div className="">
-			</div>
-		</>)
 	}
 
 //UI begins here
@@ -138,7 +122,6 @@ export default function Dashboard({incomeList,expensesList,theme}){
 						if(sub.error)
 						suberrors.push(sub)
 					})
-					console.log(expense)
 				}
 				errors.unshift(expense)
 			}
