@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Budgeting App",
+  "name": "Manage your finances like you give a shit.",
   "icons": [
     {
       "src": "favicon.ico",
