@@ -127,7 +127,7 @@ function App() {
 						<Route path="/" element={<Dashboard income={income} expenses={expenses} theme={darkmode} history={history}/>}/>
 						<Route path="/income" element={<Income income={income} expenses={expenses} theme={darkmode} />}/>
 						<Route path="/expenses" element={<Expenses income={income} expenses={expenses}/>}/>
-						<Route path="/user" element={<User />}/>
+						<Route path="/user" element={<User user={user} />}/>
 						{user == null ? <>
 							<Route path="/login" element={<Login/>}/>
 							<Route path="/register" element={<Register/>}/>

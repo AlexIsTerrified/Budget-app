@@ -31,7 +31,7 @@ enableIndexedDbPersistence(db)
   });
 
 export async function createUserWithEmail(email,password){
-	await createUserWithEmailAndPassword(auth, email, password)
+	await createUserWithEmailAndPassword(auth, email.trim(), password.trim())
 		.then(async (userCredential) => {
 			document.getElementById("loader").click()
 			const user = await userCredential.user;
@@ -43,9 +43,13 @@ export async function createUserWithEmail(email,password){
 				email:user.email,
 				income: fetchTempData().income || [],
 				expenses: fetchTempData().expenses || [],
-				history:[],
+				history:fetchTempData().history || [],
 				date:date
 			})
+			localStorage.setItem("local_expenses",[]);
+			localStorage.setItem("local_income",[]);
+			localStorage.setItem("local_date",0);
+			localStorage.setItem("local_history",[]);
 		})
 		.catch((error) => {
 			console.log({set:false,message:error})
@@ -53,7 +57,7 @@ export async function createUserWithEmail(email,password){
 }
 
 export function loginUserWithEmail(email,password){
-	return signInWithEmailAndPassword(auth, email, password)
+	return signInWithEmailAndPassword(auth, email.trim(), password.trim())
 		.then((userCredential) => {
 			document.getElementById("loader").click()
 			return {set:true,message:""}
