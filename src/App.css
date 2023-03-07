@@ -214,7 +214,7 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 .login .box a{color:#0063cc;transition: .3s;}
 .login .box a:hover{color:#2285ff}
 
-@container (max-width:840px){
+@media only screen and (max-width: 900px){
 	.main .dashboard .charts{flex-direction:column;justify-content:initial}
 	.dashboard .charts .pie-chart{min-width:initial;max-width:400px;margin:5px 0;min-height:initial;height:300px;max-height:300px}
 	.dashboard .charts .graph{align-self:flex-end;min-width:initial;max-width:400px;width:100%;margin:0;margin:5px 0;
@@ -226,51 +226,6 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 
 	.income-page .list .expanded{grid-column-start:2;grid-column-end:6;border:1px solid var(--border);margin-bottom:10px;
 		border-radius:var(--border-radius);transform-origin:top;display:grid}
-}
-
-@container (max-width:480px){
-	.start-form .income .list .row{grid-template-columns:auto auto;}
-	.start-form .income .list *:nth-child(4n-3){grid-column-start:1;}
-	.start-form .income .list *:nth-child(4n-2){grid-column-start:2;}
-	.start-form .income .list *:nth-child(4n-1){grid-column-start:1;}
-	.start-form .income .list *:nth-child(4n){grid-column-start:2;}
-
-	.income-page .list .row{grid-template-columns:1fr auto;padding:5px;}
-	.income-page .list .column:nth-child(4n-3){grid-column-start:1;}
-	.income-page .list .column:nth-child(4n-2){grid-column-start:2;}
-	.income-page .list .column:nth-child(4n-1){grid-column-start:1;}
-	.income-page .list .column:nth-child(4n){grid-column-start:2;}
-	.income-page .list .expanded{grid-column-start:1;grid-column-end:4}
-
-	.expense-page .list .row{grid-template-columns:1fr auto auto;}
-	.expense-page .list .column:nth-child(5n-4){grid-column-start:1;grid-column-end:2}
-	.expense-page .list .column:nth-child(5n-3){grid-column-start:2;}
-	.expense-page .list .column:nth-child(5n-2){grid-column-start:3;}
-	.expense-page .list .column:nth-child(5n-1){grid-column-start:1;}
-	.expense-page .list .column:nth-child(5n){grid-column-start:3;}
-	.expense-page .list .expanded{grid-column-start:1;grid-column-end:4}
-}
-@container (max-width:340px){
-	.dashboard .lists .expenses .row{grid-template-columns:80px 80px 1fr}
-	.dashboard .lists .expenses .row *:nth-child(3n){grid-column-start:3;}
-}
-@container (max-width:640px){
-	
-	.dashboard .lists .income{margin:5px 0}
-	
-	.start-form .expense .list .row{grid-template-columns:auto auto auto;}
-	.start-form .expense .list .expanded{grid-column-start:1;grid-column-end:4}
-	.start-form .expense .list .column:nth-child(5n-4){grid-column-start:1;}
-	.start-form .expense .list .column:nth-child(5n-3){grid-column-start:2;}
-	.start-form .expense .list .column:nth-child(5n-2){grid-column-start:3;}
-	.start-form .expense .list .column:nth-child(5n-1){grid-column-start:1;grid-column-end:3}
-	.start-form .expense .list .column:nth-child(5n){grid-column-start:3;}
-	.start-form .expense .list .label:nth-child(5n-4){grid-column-start:1;}
-	.start-form .expense .list .label:nth-child(5n-3){grid-column-start:2;}
-	.start-form .expense .list .label:nth-child(5n-2){grid-column-start:3;}
-	.start-form .expense .list .label:nth-child(5n-1){grid-column-start:1;grid-column-end:3}
-	.start-form .expense .list .label:nth-child(5n){grid-column-start:3;}
-
 }
 
 @media only screen and (max-width: 1040px){
@@ -302,7 +257,45 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 	.start-form{padding:10px}
 	.start-form .income .page{padding:10px}
 
+	.dashboard .lists .income{margin:5px 0}
+	
+	.start-form .expense .list .row{grid-template-columns:auto auto auto;}
+	.start-form .expense .list .expanded{grid-column-start:1;grid-column-end:4}
+	.start-form .expense .list .column:nth-child(5n-4){grid-column-start:1;}
+	.start-form .expense .list .column:nth-child(5n-3){grid-column-start:2;}
+	.start-form .expense .list .column:nth-child(5n-2){grid-column-start:3;}
+	.start-form .expense .list .column:nth-child(5n-1){grid-column-start:1;grid-column-end:3}
+	.start-form .expense .list .column:nth-child(5n){grid-column-start:3;}
+	.start-form .expense .list .label:nth-child(5n-4){grid-column-start:1;}
+	.start-form .expense .list .label:nth-child(5n-3){grid-column-start:2;}
+	.start-form .expense .list .label:nth-child(5n-2){grid-column-start:3;}
+	.start-form .expense .list .label:nth-child(5n-1){grid-column-start:1;grid-column-end:3}
+	.start-form .expense .list .label:nth-child(5n){grid-column-start:3;}
+
 	.income-page{padding:10px}
+}
+
+@media only screen and (max-width: 480px){
+	.start-form .income .list .row{grid-template-columns:auto auto;}
+	.start-form .income .list *:nth-child(4n-3){grid-column-start:1;}
+	.start-form .income .list *:nth-child(4n-2){grid-column-start:2;}
+	.start-form .income .list *:nth-child(4n-1){grid-column-start:1;}
+	.start-form .income .list *:nth-child(4n){grid-column-start:2;}
+
+	.income-page .list .row{grid-template-columns:1fr auto;padding:5px;}
+	.income-page .list .column:nth-child(4n-3){grid-column-start:1;}
+	.income-page .list .column:nth-child(4n-2){grid-column-start:2;}
+	.income-page .list .column:nth-child(4n-1){grid-column-start:1;}
+	.income-page .list .column:nth-child(4n){grid-column-start:2;}
+	.income-page .list .expanded{grid-column-start:1;grid-column-end:4}
+
+	.expense-page .list .row{grid-template-columns:1fr auto auto;}
+	.expense-page .list .column:nth-child(5n-4){grid-column-start:1;grid-column-end:2}
+	.expense-page .list .column:nth-child(5n-3){grid-column-start:2;}
+	.expense-page .list .column:nth-child(5n-2){grid-column-start:3;}
+	.expense-page .list .column:nth-child(5n-1){grid-column-start:1;}
+	.expense-page .list .column:nth-child(5n){grid-column-start:3;}
+	.expense-page .list .expanded{grid-column-start:1;grid-column-end:4}
 }
 
 .loader{width:100vw;height:100vh;display:flex;align-items:center;justify-content: center;}
