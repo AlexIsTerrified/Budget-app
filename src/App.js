@@ -37,6 +37,7 @@ function App() {
 	const updateState = () => {
 		let data = {...fetchTempData()}
 		const change =  checkForChanges(data.income,data.expenses)
+		console.log(change,data.expenses)
 		if(change){
 			editData(data.income,data.expenses,data.history)
 			if(data.income && data.expenses){

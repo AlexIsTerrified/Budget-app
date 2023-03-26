@@ -300,16 +300,18 @@ export default function Expenses({income,expenses,theme}){
 	}
 
 	const QRRender = (data) => {
-		const date = [data.date.slice(0,2),data.date.slice(2,4),data.date.slice(4,8),data.date.slice(8,10),data.date.slice(10,12)]
-		const dateObj = new Date(date[0],Number(date[1])-1,date[2],date[3],date[4])
-		const n_expense = {name:data.company+" "+date[0]+"-"+date[1]+"-"+date[2],
-					fixed:false,priority:0,date:dateObj.valueOf(),amount:[]}
-		if(data.items.length > 1){
-			data.items.forEach((item)=>{
-				n_expense.amount.push({name:item.name,amount:(Number(item.vat)+Number(item.price))*Number(item.quantity),date:dateObj.valueOf()})
+		const n_data = data
+		const date = [n_data.date.slice(0,2),n_data.date.slice(2,4),n_data.date.slice(4,8),n_data.date.slice(8,10),n_data.date.slice(10,12)]
+		let dateObj = new Date(date[0],Number(date[1])-1,date[2],date[3],date[4])
+		dateObj = dateObj.valueOf()
+		const n_expense = {name:n_data.company+" "+date[0]+"-"+date[1]+"-"+date[2],
+					fixed:false,priority:0,date:dateObj,amount:[]}
+		if(n_data.items.length > 1){
+			n_data.items.forEach((item,k)=>{
+				n_expense.amount.push({name:item.name,amount:(Number(item.vat)+Number(item.price))*Number(item.quantity),date:dateObj+k})
 			})
 		}else{
-			n_expense.amount = Number(data.total)
+			n_expense.amount = Number(n_data.total)
 		}
 		
 		setQRExpense(n_expense)

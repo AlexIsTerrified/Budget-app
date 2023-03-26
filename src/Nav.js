@@ -9,7 +9,6 @@ export default function App({warningNum}){
 	const [width,setWidth] = useState(window.innerWidth)
 	const location = useLocation()
 
-	console.log(warningNum.income.warnings)
   useEffect(()=>{
     window.addEventListener("resize",()=>{
       setWidth(window.innerWidth)

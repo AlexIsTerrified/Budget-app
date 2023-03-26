@@ -223,6 +223,9 @@ export function checkForChanges(income,expenses){
 		const n_expenses = typeof expenses === 'object' ? [...expenses] : false
 		const n_userData = fetchOldData()
 		let returnValue = false
+		if(n_income.length !== n_userData.income.length || n_expenses.length !== n_userData.expenses.length){
+			return true
+		}
 		n_income.forEach((newItem)=>{
 			let isDifferent = true
 			try{
@@ -241,7 +244,6 @@ export function checkForChanges(income,expenses){
 				returnValue = true
 			}
 		})
-
 		n_expenses.forEach((newItem)=>{
 			let isDifferent = true
 			try{
@@ -260,7 +262,6 @@ export function checkForChanges(income,expenses){
 				returnValue = true
 			}
 		})
-
 		return returnValue
 		}catch(e){
 			console.log(e)
