@@ -13,11 +13,12 @@ import Login from './User/Login'
 import Register from './User/Register'
 import UserStatus from './UserStatus'
 import {fetchTempData,setTempData,setTempHistory,fetchData,editData,darkMode,auth,checkForChanges,updateForMonth} from './Functions/functions'
-import { getStatus} from './Functions/calculations';
+import { getStatus,getWarningNum} from './Functions/calculations';
 
 function App() {
 	const [income, setIncome] = useState([]);
 	const [expenses, setExpenses] = useState([]);
+	const [warningNum, setWarningNum] = useState({income:{errors:0,warnings:0},expenses:{errors:0,warnings:0}});
 	const [history, setHistory] = useState([]);
 	const [darkmode,setDarkmode] = useState(darkMode().set)
 	const [user,setUser] = useState(false)
@@ -42,6 +43,7 @@ function App() {
 				data = {...data,...getStatus(data.income,data.expenses)}
 			}
 			console.log("data updated",data)
+			setWarningNum(getWarningNum(data.income,data.expenses))
 			 setIncome(data.income)
 			 setExpenses(data.expenses)
 			 //setHistory(data.history)
@@ -68,6 +70,7 @@ function App() {
 				updateInfo = {...updateInfo,...await updateForMonth(updateInfo)	}
 				updateInfo = {...updateInfo,...getStatus(updateInfo.income,updateInfo.expenses)	}
 			}
+			setWarningNum(getWarningNum(updateInfo.income,updateInfo.expenses))
 			setIncome(updateInfo.income)
 			setExpenses(updateInfo.expenses)
 			setHistory(updateInfo.history)
@@ -120,7 +123,7 @@ function App() {
 
   return (
 			<ThemeProvider theme={darkTheme}>
-				<Nav/>
+				<Nav warningNum={warningNum}/>
 				<div className="main">
 					<UserStatus user={user}/>
 					<Routes>

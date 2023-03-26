@@ -5,7 +5,7 @@ import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,Arro
 import {useLocation} from 'react-router-dom'
 import {setTempData} from '../Functions/functions'
 import {getTotal,getStatus,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
-import {turnOffCamera, turnOnCamera,renderExpense} from '../Functions/InfoExtractor'
+import {turnOnCamera,renderExpense} from '../Functions/InfoExtractor'
 
 export default function Expenses({income,expenses,theme}){
 	const [expensesList,setExpensesList] = useState(expenses || [])
@@ -15,15 +15,14 @@ export default function Expenses({income,expenses,theme}){
 	const [menuExpenses,setMenuExpenses] = useState({});
 	const [menu,setMenu] = useState(0);
 	const [anchorEl, setAnchorEl] = useState(null);
-	const [anchorScan, setAnchorScan] = useState(null);
 	const open = Boolean(anchorEl);
-	const openScan = Boolean(anchorScan);
 	const [openForm, setForm] = useState(false);
-	const [openCamera, setCamera] = useState(false);
+	const [openQRForm, setQRForm] = useState(false);
 	const [openDelete, setOpenDelete] = useState(false);
 	const [openChange, setOpenChange] = useState(false);
+	const [qrExpense,setQRExpense] = useState({})
+	const [QRwarning, setQRwarning] = useState(false);
 
-	const location = useLocation();
 
 	useEffect(()=>{
 		setExpensesList(expenses)
@@ -91,9 +90,6 @@ export default function Expenses({income,expenses,theme}){
 		handleSubmit()
 	}
 
-	const handleScanMenu = (event) => {
-		setAnchorScan(event.currentTarget);
-	}
 
 	const handleClick = (event,expenses,i) => {
 		setMenuExpenses(expenses)
@@ -102,7 +98,6 @@ export default function Expenses({income,expenses,theme}){
 	};
 	const handleClose = () => {
 	  setAnchorEl(null);
-	  setAnchorScan(null);
 	};
 
 
@@ -249,23 +244,6 @@ export default function Expenses({income,expenses,theme}){
 				</Menu>
 	}
 
-	const ScanMenu = () => {
-		return <Menu anchorEl={anchorScan} open={openScan} onClose={handleClose}>
-					<MenuItem onClick={()=>{turnOnCamera();handleClose();}}>
-						<ListItemIcon>
-							<CameraAlt fontSize="small" />
-						</ListItemIcon>
-						<ListItemText>Take Picture</ListItemText>
-					</MenuItem>
-					<MenuItem onClick={handleClose}>
-						<ListItemIcon>
-							<Attachment fontSize="small" />
-						</ListItemIcon>
-						<ListItemText>Upload Image</ListItemText>
-					</MenuItem>
-				</Menu>
-	}
-
 	const Changedialog = () => {
 		return  <Dialog open={openChange} onClose={handleCloseChange}>
         <DialogTitle>
@@ -305,28 +283,108 @@ export default function Expenses({income,expenses,theme}){
       </Dialog>
 	}
 
-	const Camera = () => {
-		return  <Dialog open={openCamera} onClose={handleCloseChange}>
-        <DialogTitle>
-         Take a picture of your receipt/Bill
-        </DialogTitle>
+	const OpenQRwarning = () => {
+		return <Dialog open={QRwarning} onClose={()=>setQRwarning(false)}>
         <DialogContent>
-          <div className="camera">
-
-		  </div>
+          <DialogContentText>
+            Click scan to take a photo or upload a photo of your QR receipts
+          </DialogContentText>
         </DialogContent>
+        <DialogActions>
+          <Button color="secondary" autoFocus onClick={()=>setQRwarning(false)}>
+            Cancel
+          </Button>
+          <Button color="primary" onClick={()=>{turnOnCamera();setQRwarning(false)}}>Scan</Button>
+        </DialogActions>
       </Dialog>
 	}
-	
+
+	const QRRender = (data) => {
+		const date = [data.date.slice(0,2),data.date.slice(2,4),data.date.slice(4,8),data.date.slice(8,10),data.date.slice(10,12)]
+		const dateObj = new Date(date[0],Number(date[1])-1,date[2],date[3],date[4])
+		const n_expense = {name:data.company+" "+date[0]+"-"+date[1]+"-"+date[2],
+					fixed:false,priority:0,date:dateObj.valueOf(),amount:[]}
+		if(data.items.length > 1){
+			data.items.forEach((item)=>{
+				n_expense.amount.push({name:item.name,amount:(Number(item.vat)+Number(item.price))*Number(item.quantity),date:dateObj.valueOf()})
+			})
+		}else{
+			n_expense.amount = Number(data.total)
+		}
+		
+		setQRExpense(n_expense)
+		setNewExpenses(n_expense)
+		setQRForm(true)
+	}
+
+
 	return (
 	<div className="income-page expense-page">
 		<div className="page">
-			<h1>Expenses</h1>
+			<h1>Expenses <span>(${Number(getTotal(expensesList)).toFixed(2) || 0.00})</span></h1>
+			<p></p>
 			<div className="head">
 				<Button variant="contained" color="primary" onClick={()=>{setForm(true)}}>Add Expense</Button>
-				<Button  startIcon={<FilterCenterFocus />} onClick={handleScanMenu} variant="text" color="primary">Scan Receipt</Button>
-				<ScanMenu/>
+				<Button  startIcon={<FilterCenterFocus />} onClick={()=>setQRwarning(true)} variant="text" color="primary">Scan QR Receipt</Button>
 			</div>
+			<OpenQRwarning/>
+			<Dialog open={openQRForm} onClose={()=>{setQRForm(false)}} maxWidth="md" fullWidth>
+				<DialogTitle>Add An Expense</DialogTitle>
+				<DialogContent>
+				<div className="income-form">
+					<div className="top">
+						<div className="row">
+							<TextField defaultValue={qrExpense.name} onChange={(e)=>handleExpenses(e,"name")} label="Name" size="small" variant="outlined" required/>
+						</div>
+						<div className="row center">
+						<span className="label">Fixed</span>
+							<Switch onChange={(e)=>handleExpenses(e,"fixed")} color="primary" required/>
+						</div>
+						<div className="row">
+								<FormControl>
+									<InputLabel shrink htmlFor="select-multiple-native">
+									  Priority
+									</InputLabel>
+								  <Select defaultValue={0} onChange={(e)=>handleExpenses(e,"priority")} label="Priority" size="small" required>
+									<MenuItem value={2}>High</MenuItem>
+									<MenuItem value={1}>Medium</MenuItem>
+									<MenuItem value={0}>Low</MenuItem>
+								  </Select>
+							  </FormControl>
+						</div>
+						<div className="row">
+						{typeof newExpenses.amount !== "object" ? 
+							<TextField defaultValue={qrExpense.amount} onChange={(e)=>handleExpenses(e,"amount")} label="Amount" type="number" size="small" variant="outlined"
+							required
+							 InputProps={{
+								startAdornment: <InputAdornment position="start">$</InputAdornment>,
+							}} /> 
+							: <TextField id="amount" value={getTotal(newExpenses.amount)} type="number" label="Amount" size="small" variant="outlined" disabled
+								required
+							 InputProps={{
+								startAdornment: <InputAdornment position="start">$</InputAdornment>,
+							}} /> 
+							}
+						  </div>
+						  <div className="row expand">
+							<IconButton size="small" color="primary" onClick={handleExpand}>
+								{ typeof newExpenses.amount !== "object" ? <ExpandMore/> : <ExpandLess/>}
+							</IconButton>
+						</div>
+					</div>
+					{typeof newExpenses.amount !== "object" ? "" : 
+						<div className="bottom">
+						{newExpenses.amount.map((amount,i)=>Expanded(amount,i))}
+						</div>}
+				</div>
+				</DialogContent>
+				<DialogActions>
+					<Button autoFocus onClick={()=>{setQRForm(false)}}>
+						Cancel
+					</Button>
+					<Button disabled={newExpenses.name == '' || newExpenses.amount == ''} onClick={()=>{handleAddExpenses();setQRForm(false)}}>Add</Button>
+				</DialogActions>
+				</Dialog>
 			<Dialog open={openForm} onClose={()=>{setForm(false)}} maxWidth="md" fullWidth>
 			<DialogTitle>Add An Expense</DialogTitle>
 			<DialogContent>
@@ -413,7 +471,8 @@ export default function Expenses({income,expenses,theme}){
 				<Button size="medium" variant="contained" onClick={handleSubmit} disabled={expensesList.length === 0}>Done</Button>
 			</div>
 		</div>
-		<input accept="image/*" className="hidden" id="cameraButton" type="file" capture="environment" onChange={(e)=>renderExpense(e.target)}/>
+		<input accept="image/*" className="hidden" id="cameraButton" type="file" capture="environment" onChange={async(e)=>{await renderExpense(e,(data)=>{console.log(data);QRRender(data)})}}/>
+		<div id="reader"></div>
 		<ItemMenu/>
 		<Deletedialog/>
 		<Changedialog/>
@@ -453,7 +512,7 @@ function Item({expenses,i,handleChange,editExpChange,editExpAdd,handleClick}){
 				<IconButton size="small" color="primary" onClick={()=>setExpand(!expand)} >
 					{ !expand ? <ExpandMore/> : <ExpandLess/>}
 				</IconButton>
-				<span>{getTotal(expenses.amount)}</span>
+				<span>${Number(getTotal(expenses.amount)).toFixed(2)}</span>
 			</>}
 		</div>
 		<div className="column end">

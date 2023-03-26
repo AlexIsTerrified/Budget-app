@@ -211,13 +211,13 @@ export function donutInputs(expenses,incomeTotal){
 	const series = []
 
 	expenses.forEach((item)=>{
-		labels.push(item.name)
+		labels.push(item.name.length > 14 ? item.name.slice(0,13)+"..." : item.name)
 		series.push(Number(getTotal(item.amount)))
 		total = total + Number(getTotal(item.amount))
 	})
 	total = incomeTotal - total
 	
-	series.unshift(total)
+	series.unshift(Number(total))
 	labels.unshift("Savings")
 	return {labels:labels,series:series}
 }
@@ -241,15 +241,15 @@ export function areaInputs(expensesTotal,incomeTotal,history=[]){
 		
 		
 		if(i==0){
-			income[11] = incomeTotal
-			expenses[11] = expensesTotal
+			income[11] = incomeTotal.toFixed(2)
+			expenses[11] = expensesTotal.toFixed(2)
 		}else if(n_history.length > 0){
 			const n = n_history.pop()
-			income[11-i] = n.income
-			expenses[11-i] = n.expenses
+			income[11-i] = Number(n.income).toFixed(2)
+			expenses[11-i] = Number(n.expenses).toFixed(2)
 		}else{
-			income[11-i] = 0
-			expenses[11-i] = 0
+			income[11-i] = 0.00
+			expenses[11-i] = 0.00
 		}
 	}
 
@@ -280,6 +280,20 @@ export function correctStringErrors(data){
 	}catch(e){
 		return null
 	}
+}
+
+export function getWarningNum(income,expenses){
+	const r = {income:{errors:0,warnings:0},expenses:{errors:0,warnings:0}}
+	income.forEach((item)=>{
+		if(item.outdated)r.income.warnings = r.income.warnings + 1
+		if(item.error)r.income.errors = r.income.errors + 1
+	})
+	expenses.forEach((item)=>{
+		if(item.outdated)r.expenses.warnings = r.expenses.warnings + 1
+		if(item.error)r.expenses.errors = r.expenses.errors + 1
+	})
+	console.log(r)
+	return r
 }
 
 export function historyUpdate(history,data){

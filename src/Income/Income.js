@@ -276,7 +276,7 @@ export default function Income({income,expenses,theme}){
 	return (
 	<div className="income-page">
 		<div className="page">
-			<h1>Income</h1>
+			<h1>Income <span>(${getTotal(incomeList).toFixed(2) || 0.00})</span></h1>
 			<div className="head">
 			<Button variant="contained" color="primary" onClick={()=>{setForm(true)}}>ADD INCOME</Button>
 			</div>
@@ -382,7 +382,7 @@ function Item({income,i,handleChange,editExpChange,editExpAdd,handleClick}){
 				<IconButton size="small" color="primary" onClick={()=>setExpand(!expand)}>
 					{ !expand ? <ExpandMore/> : <ExpandLess/>}
 				</IconButton>
-				<span>{getTotal(income.amount)}</span>
+				<span>{Number(getTotal(income.amount)).toFixed(2)}</span>
 			</>}
 		</div>
 		<div className="column end">

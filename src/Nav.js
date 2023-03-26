@@ -2,14 +2,14 @@ import {useState,useEffect} from 'react'
 import {NavLink as Link,useLocation} from 'react-router-dom'
 import {Switch,FormControl, Tooltip,Zoom} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import {AccountBalanceWallet,Receipt,Dashboard,ManageAccounts} from '@mui/icons-material';
+import {AccountBalanceWallet,Receipt,Dashboard,ManageAccounts,Badge} from '@mui/icons-material';
 import {setDarkMode,darkMode} from './Functions/functions'
 
-export default function App(){
+export default function App({warningNum}){
 	const [width,setWidth] = useState(window.innerWidth)
-	const [loc,setLoc] = useState("")
 	const location = useLocation()
 
+	console.log(warningNum.income.warnings)
   useEffect(()=>{
     window.addEventListener("resize",()=>{
       setWidth(window.innerWidth)
@@ -31,17 +31,25 @@ export default function App(){
 				</Link>
 				<Link to="/income">
 					<div className="item">
-            <Tooltip title="Income" TransitionComponent={Zoom} placement={width <= 640 ? "top" : "right-start"} arrow>
-						  <AccountBalanceWallet/>
-            </Tooltip>
+						{warningNum.income.errors > 0 || warningNum.income.warnings > 0 ? 
+						<span className={"badge "+(warningNum.income.errors > 0 ? "error" : "warning")}>
+						{warningNum.income.errors > 0 ? warningNum.income.errors : warningNum.income.warnings}</span> : ""}
+						
+						<Tooltip title="Income" TransitionComponent={Zoom} placement={width <= 640 ? "top" : "right-start"} arrow>
+								<AccountBalanceWallet color="action"/>  
+						</Tooltip>
 						<b>Income</b>
 					</div>
 				</Link>
 				<Link to="/expenses">
 					<div className="item">
-            <Tooltip title="Expenses" TransitionComponent={Zoom} placement={width <= 640 ? "top" : "right-start"} arrow>
-						  <Receipt/>
-            </Tooltip>
+						{warningNum.expenses.errors > 0 || warningNum.expenses.warnings > 0 ? 
+						<span className={"badge "+(warningNum.expenses.errors > 0 ? "error" : "warning")}>
+						{warningNum.expenses.errors > 0 ? warningNum.expenses.errors : warningNum.expenses.warnings}</span> : ""}
+						
+							<Tooltip title="Expenses" TransitionComponent={Zoom} placement={width <= 640 ? "top" : "right-start"} arrow>
+									<Receipt/>
+							</Tooltip>
 						<b>Expenses</b>
 					</div>
 				</Link>

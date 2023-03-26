@@ -41,9 +41,13 @@ export default function Dashboard({income,expenses,theme,history}){
 			},
 			dataLabels: {
 				enabled: true,
+				background:{
+					enabled:false
+				}
 			},
 			plotOptions: {
 			  pie: {
+				expandOnClick: false,
 				  dataLabels: {
 					offset: 0,
 					minAngleToShowLabel: 10
@@ -55,7 +59,10 @@ export default function Dashboard({income,expenses,theme,history}){
 					  show:true
 					},
 					value: {
-					  show:true
+					  show:true,
+					  formatter: function (value) {
+							return "$"+Number(value).toFixed(2);
+						}
 					}
 				  },
 				  size: '70%'
@@ -71,6 +78,13 @@ export default function Dashboard({income,expenses,theme,history}){
 	const Area = () => {
 		const area = areaInputs(expensesTotal,incomeTotal,history)
 		const areaOptions = {
+						yaxis: {
+							labels: {
+							formatter: function (value) {
+								return "$"+value.toFixed(2);
+							}
+							},
+						},
 						xaxis: {
 						  categories: area.xaxis
 						},
@@ -149,40 +163,6 @@ export default function Dashboard({income,expenses,theme,history}){
 			</div>
 		)
 	}
-
-	const expensesItem = (item,i) => {
-		const amount = item.amount !== "object" ? getTotal(item.amount).toFixed(2) : item.amount.toFixed(2)
-		const percentage = item.amount !== "object" ? ((getTotal(item.amount)/incomeTotal)*100).toFixed(1) : ((item.amount/incomeTotal)*100).toFixed(1)
-		const progress = item.amount !== "object" ? ((getTotal(item.amount)/expensesTotal)*100).toFixed(1) : ((item.amount/expensesTotal)*100).toFixed(1)
-		
-		return (
-			<div className={"row "+(i%2===0 ? "":"even ")+(item.error ? "error ":"")+(item.outdated ? "outdated ":"")} key={i+""+item.date}>
-				<span className="column">{item.name}</span>
-				<span className="column">{item.priority == 0 ? "Low" : item.priority == 1 ? "Medium" : "High"}</span>
-				<span className="column">
-					<div className="progress" style={{width:progress+"%"}}>
-					<span>{percentage}%</span><span>(${amount})</span>
-					</div>
-				</span>
-			</div>
-		)
-	}
-	
-	const incomeItem = (item,i) => {
-		const amount = item.amount !== "object" ? getTotal(item.amount).toFixed(2) : item.amount.toFixed(2)
-		const percentage = item.amount !== "object" ? ((getTotal(item.amount)/incomeTotal)*100).toFixed(1) : ((item.amount/incomeTotal)*100).toFixed(1)
-		
-		return (
-			<div className={"row "+(i%2===0 ? "":"even ")+(item.error ? "error ":"")+(item.outdated ? "outdated ":"")} key={i}>
-				<span className="column">{item.name}</span>
-				<span className="column">
-				<div className="progress" style={{width:percentage+"%"}}>
-					<span>{percentage}%</span><span>(${amount})</span>
-					</div>
-				</span>
-			</div>
-		)
-	}
 	
 	return (
 		<div className="dashboard">
@@ -218,23 +198,57 @@ export default function Dashboard({income,expenses,theme,history}){
 				<Link to="/income" className="income">
 					<div className="row even">
 						<span className="label">Income</span>
-						<span className="label">% of income</span>
+						<span className="label">% of income (${Number(incomeTotal).toFixed(2)})</span>
 					</div>
 					{sortByStatus(sortByAmount(income)).map((item,i)=>{
-						return (incomeItem(item,i))
+						return (<IncomeItem item={item} i={i} incomeTotal={incomeTotal} />)
 					})}
 				</Link>
 				<Link to="/expenses" className="income expenses">
 					<div className="row even">
 						<span className="label">Expenses</span>
 						<span className="label">Priority</span>
-						<span className="label">% of income</span>
+						<span className="label">% of expenses (${Number(expensesTotal).toFixed(2)})</span>
 					</div>
 					{sortByStatus(sortByAmount(expenses)).map((item,i)=>{
-						return (expensesItem(item,i))
+						return (<ExpenseItem item={item} i={i} expensesTotal={expensesTotal} />)
 					})}
 				</Link>
 			</div>
+		</div>
+	)
+}
+
+const ExpenseItem = ({item,i,expensesTotal}) => {
+	const amount = item.amount !== "object" ? getTotal(item.amount).toFixed(2) : item.amount.toFixed(2)
+	const percentage = item.amount !== "object" ? ((getTotal(item.amount)/expensesTotal)*100).toFixed(1) : ((item.amount/expensesTotal)*100).toFixed(1)
+	const progress = item.amount !== "object" ? ((getTotal(item.amount)/expensesTotal)*100).toFixed(1) : ((item.amount/expensesTotal)*100).toFixed(1)
+	
+	return (
+		<div className={"row "+(i%2===0 ? "":"even ")+(item.error ? "error ":"")+(item.outdated ? "outdated ":"")} key={i+""+item.date}>
+			<span className="column">{item.name}</span>
+			<span className="column">{item.priority == 0 ? "Low" : item.priority == 1 ? "Medium" : "High"}</span>
+			<span className="column">
+				<div className="progress" style={{width:progress+"%"}}>
+				<span>{percentage}%</span><span>(${Number(amount).toFixed(2)})</span>
+				</div>
+			</span>
+		</div>
+	)
+}
+
+const IncomeItem = ({item,i,incomeTotal}) => {
+	const amount = item.amount !== "object" ? getTotal(item.amount).toFixed(2) : item.amount.toFixed(2)
+	const percentage = item.amount !== "object" ? ((getTotal(item.amount)/incomeTotal)*100).toFixed(1) : ((item.amount/incomeTotal)*100).toFixed(1)
+	
+	return (
+		<div className={"row "+(i%2===0 ? "":"even ")+(item.error ? "error ":"")+(item.outdated ? "outdated ":"")} key={i+""+item.date}>
+			<span className="column">{item.name}</span>
+			<span className="column">
+			<div className="progress" style={{width:percentage+"%"}}>
+				<span>{percentage}%</span><span>(${Number(amount)})</span>
+				</div>
+			</span>
 		</div>
 	)
 }

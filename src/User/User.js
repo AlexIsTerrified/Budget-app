@@ -8,11 +8,12 @@ export default function User({user}){
 	const handleDark = (e) => {
         setDarkMode(e.target.checked)
     }
-
+    
     return(
         <div className="user-preference">
             {user ?
-                <div className="login">
+                <div className="no-user">
+                    <p>{user.email}</p>
                     <div className="button" onClick={logout} >
                         <Logout/>Logout
                     </div>
