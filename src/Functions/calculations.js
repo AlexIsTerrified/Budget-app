@@ -227,7 +227,7 @@ export function areaInputs(expensesTotal,incomeTotal,history){
 	const xaxis = []
 	const income = []
 	const expenses = []
-	const n_history = [...history || []]
+	const n_history = [...history] || []
 	
 	let today = new Date()
 	today = today.getMonth()

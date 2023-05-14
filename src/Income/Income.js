@@ -1,10 +1,9 @@
 import React,{useState,useEffect} from 'react'
-import {Select,TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,
-	FormControl,InputLabel} from '@mui/material';
+import {TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,} from '@mui/material';
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,ArrowDropUp} from '@mui/icons-material';
 import {useLocation} from 'react-router-dom'
 import {setTempData} from '../Functions/functions'
-import {getTotal,sortByStatus,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
+import {getTotal,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
 
 export default function Income({income,expenses,theme}){
 	const [incomeList,setIncomeList] = useState(income || [])

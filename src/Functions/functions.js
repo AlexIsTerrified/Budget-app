@@ -2,7 +2,6 @@ import {updateDate,correctStringErrors,historyUpdate,getTotal} from './calculati
 import { initializeApp } from "firebase/app";
 import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut } from "firebase/auth";
 import { getDoc,doc, setDoc,getFirestore,enableIndexedDbPersistence } from "firebase/firestore"; 
-import NewIncome from '../Dashboard/newIncome';
 
 const firebaseConfig = {
   apiKey: "AIzaSyD_SkBpUiKHmWx4fJYipQ_VD1lo72BE9Sk",
@@ -32,9 +31,9 @@ enableIndexedDbPersistence(db)
   });
 
 export async function createUserWithEmail(email,password){
-	document.getElementById("loader").click()
 	await createUserWithEmailAndPassword(auth, email, password)
 		.then(async (userCredential) => {
+			document.getElementById("loader").click()
 			const user = await userCredential.user;
 			await console.log(user)
 			console.log({set:true,message:user})
@@ -53,9 +52,9 @@ export async function createUserWithEmail(email,password){
 }
 
 export function loginUserWithEmail(email,password){
-	document.getElementById("loader").click()
 	return signInWithEmailAndPassword(auth, email, password)
 		.then((userCredential) => {
+			document.getElementById("loader").click()
 			return {set:true,message:""}
 		})
 		.catch((error) => {
@@ -131,12 +130,11 @@ export function setTempHistory(history){
 // fetches data as javascript object from local storage or cloud storage
 export function fetchData(){
 	if(auth.currentUser){
-		const data = {income:[],expenses:[]}
 		return getDoc(doc(db, "users", auth.currentUser.uid)).then((snap)=>{
 			if(snap.exists()){
 				const data = snap.data()
-				setOldData(snap.data().income,snap.data().expenses)
-				return snap.data()
+				setOldData(data.income,data.expenses)
+				return data
 			}
 		}).catch((err)=>{
 			console.log(err)
@@ -146,16 +144,20 @@ export function fetchData(){
 		let expenses = localStorage.getItem("local_expenses");
 		let date_modified = localStorage.getItem("local_date");
 		let history = localStorage.getItem("local_history");
-		console.log(income,expenses)
+		
 		if(income)income = correctStringErrors(income)
 		else income = []
 		if(expenses)expenses = correctStringErrors(expenses)
 		else expenses = []
-		if(!date_modified){
+		if(date_modified){
+			date_modified = JSON.parse(date_modified)
+		}else{
 			let date = new Date()
 			date_modified = date.valueOf()
 		}
-		if(!history){
+		if(history){
+			history = JSON.parse(history)			
+		}else{
 			history = []
 		}
 		//userData = {income:[...income],expenses:[...expenses],date_modified:date_modified}
@@ -202,10 +204,11 @@ export function editData(income,expenses,history){
 
 		newExpenses = JSON.stringify(newExpenses)
 		newIncome = JSON.stringify(newIncome)
+		newHistory = JSON.stringify(newHistory)
 		localStorage.setItem("local_expenses",newExpenses);
 		localStorage.setItem("local_income",newIncome);
 		localStorage.setItem("local_date",date);
-		localStorage.setItem("local_history",history);
+		localStorage.setItem("local_history",newHistory);
 	}
 }
 
@@ -266,9 +269,10 @@ export function updateForMonth(data){
 	let oldDate = new Date(data.date)
 	oldDate = oldDate.getMonth()
 
-	let n_data = data
+	let n_data = data || []
 
-	if(currDate != oldDate){
+	if(currDate !== oldDate){
+		console.log("history update",currDate,oldDate)
 		let n = currDate > oldDate ? (currDate-oldDate)-1 : (currDate-oldDate)+11
 		while(n>0){
 			n_data.history = historyUpdate(n_data.history,{income:0,expenses:0})

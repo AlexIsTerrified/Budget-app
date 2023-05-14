@@ -14,14 +14,16 @@ export default function Login(){
 
     const handleSubmit = async () => {
         const newP =await loginUserWithEmail(email,password)
-        await console.log(newP)
-        await setPrompt(newP.set)
-        navigate("/")
+        console.log(newP)
+        setPrompt(newP.set)
+        if(newP.set)
+            navigate("/")
        // {prompt != "" ? <i>{prompt.code}</i> : ""}
     }
 
     return (
         <div className="login">
+            <h1>Login</h1>
             <div className="box">
                 <b>Login with Email and Password</b>
                 <TextField label="Email" size="small"  onChange={(e)=>setEmail(e.target.value)} />

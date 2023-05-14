@@ -1,7 +1,6 @@
-var CACHE_NAME = 'pwa-task-manager';
+var CACHE_NAME = 'Budgeting App';
 var urlsToCache = [
-  '/',
-  '/completed'
+  '/complete'
 ];
 
 // Install a service worker

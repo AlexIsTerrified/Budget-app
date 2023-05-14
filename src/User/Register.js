@@ -3,7 +3,6 @@ import {NavLink as Link,useNavigate} from 'react-router-dom'
 import {Button,TextField,InputAdornment,IconButton,OutlinedInput,InputLabel,FormControl} from '@mui/material';
 import {VisibilityOff,Visibility} from '@mui/icons-material';
 import {createUserWithEmail} from '../Functions/functions'
-import { on } from 'events';
 
 export default function Register(){
     const [showPassword,setShowPassword] = useState(false)
@@ -32,6 +31,7 @@ export default function Register(){
 
     return (
         <div className="login">
+            <h1>Sign Up</h1>
             <div className="box">
                 <b>Sign up with Email and Password</b>
                 <TextField label="Email" size="small" onChange={(e)=>setEmail(e.target.value)} />
@@ -67,7 +67,7 @@ export default function Register(){
                         </InputAdornment>
                     } />
                 </FormControl>
-                {password != '' && rePassword != '' && comparePass ? <i>Passwords are not the same</i> : ''}
+                {password != '' && rePassword != '' && comparePass ? <i>Passwords are not the same</i> : <i> </i>}
                 <Button variant="contained" onClick={onSubmit}>Sign Up</Button>
             </div>
             <h4>or</h4>

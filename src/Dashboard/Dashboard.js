@@ -1,9 +1,9 @@
-import {Error,CheckCircle, CheckCircleSharp} from '@mui/icons-material';
+import {Error,CheckCircle} from '@mui/icons-material';
 import {NavLink as Link} from 'react-router-dom'
 import Chart from 'react-apexcharts'
 import NewIncome from './newIncome'
 import NewExpenses from './newExpense'
-import {getTotal,sortByStatus,sortByAmount,donutInputs,areaInputs, sortByPriority,ifOutdated}from '../Functions/calculations'
+import {getTotal,sortByStatus,sortByAmount,donutInputs,areaInputs,ifOutdated}from '../Functions/calculations'
 
 
 export default function Dashboard({income,expenses,theme,history}){

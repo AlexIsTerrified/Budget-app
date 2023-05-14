@@ -50,7 +50,7 @@ export default function App(){
             <Tooltip title="User Preference" TransitionComponent={Zoom} placement={width <= 640 ? "top" : "right-start"} arrow>
 						  <ManageAccounts/>
             </Tooltip>
-						<b>User Preference</b>
+						<b>Settings</b>
 					</div>
 				</Link>
 			</div>

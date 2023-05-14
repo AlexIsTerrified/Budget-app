@@ -1,5 +1,4 @@
-import {FormControl,FormLabel,RadioGroup,Radio,FormControlLabel} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import {FormLabel,RadioGroup,Radio,FormControlLabel} from '@mui/material';
 import {setDarkMode,darkMode} from '../Functions/functions'
 
 export default function User(){
@@ -10,7 +9,10 @@ export default function User(){
 
     return(
         <div className="user-preference">
-            <div className="darkmode">
+            <div className="head">
+            <h1>Settings</h1>
+            </div>
+            <div className="box darkmode">
             <FormLabel id="demo-radio-buttons-group-label">Light preference</FormLabel>
                 <RadioGroup defaultValue={darkMode().value} onChange={e=>setDarkMode(e.target.value)} >
                     <FormControlLabel value={0} control={<Radio />} label="System Preference" />

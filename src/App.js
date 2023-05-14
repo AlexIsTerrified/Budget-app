@@ -1,9 +1,7 @@
-import {useEffect, useState,useMemo} from 'react'
-import {Route,BrowserRouter as Router,Routes,NavLink as Link,useLocation, BrowserRouter} from 'react-router-dom'
+import {useEffect, useState} from 'react'
+import {Route,Routes,useLocation} from 'react-router-dom'
 import { ThemeProvider, createTheme} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import {onAuthStateChanged} from 'firebase/auth'
-import logo from './logo.svg';
 import './App.css';
 import Nav from './Nav'
 import Dashboard from './Dashboard/Dashboard'
@@ -14,7 +12,7 @@ import Login from './User/Login'
 import Register from './User/Register'
 import UserStatus from './UserStatus'
 import {fetchTempData,setTempData,setTempHistory,fetchData,editData,darkMode,auth,checkForChanges,updateForMonth} from './Functions/functions'
-import { getStatus,sortByStatus,updateDate} from './Functions/calculations';
+import { getStatus} from './Functions/calculations';
 
 function App() {
 	const [income, setIncome] = useState([]);
@@ -35,7 +33,7 @@ function App() {
 	});
 	
 	const updateState = () => {
-		let data = {...  fetchTempData()}
+		let data = {...fetchTempData()}
 		const change =  checkForChanges(data.income,data.expenses)
 		if(change){
 			editData(data.income,data.expenses,data.history)
@@ -64,7 +62,7 @@ function App() {
 	}
 
 	const initData =async ()=>{
-		let updateInfo ={... await fetchData()}
+		let updateInfo ={...await fetchData()}
 			if(updateInfo.income && updateInfo.expenses ){
 				updateInfo = {...updateInfo,...await updateForMonth(updateInfo)	}
 				updateInfo = {...updateInfo,...getStatus(updateInfo.income,updateInfo.expenses)	}
@@ -121,7 +119,7 @@ function App() {
 
   return (
 			<ThemeProvider theme={darkTheme}>
-				{income == false || expenses == false || income == null || expenses == null ? "" : <Nav/>}
+				<Nav/>
 				<div className="main">
 					<UserStatus user={user}/>
 					<Routes>

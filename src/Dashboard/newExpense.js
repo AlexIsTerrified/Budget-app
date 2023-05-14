@@ -7,7 +7,7 @@ import {getTotal}from '../Functions/calculations'
 export default function NewExpenses({income,expenses}){
 	const [expensesList,setexpensesList] = useState([])
 	const [length,setLength] = useState(expensesList.length)
-	const [newExpense, setNewExpenses] = useState({name:'Rent',fixed:false,priority:2,amount:1000});
+	const [newExpense, setNewExpenses] = useState({name:'Rent',fixed:false,priority:2,amount:500});
 	const [expanded,setExpanded] = useState({})
 	
 	const handleExpenses = (e,id) => {
