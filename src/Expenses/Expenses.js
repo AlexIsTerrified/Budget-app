@@ -212,6 +212,10 @@ export default function Expenses({income,expenses,theme}){
 		handleSubmit()
 	}
 
+	const handleUpdate= () => {
+		document.getElementById("hidden").click()
+	}
+
 //UI code starts from here
 
 	const Expanded = (amount,i) => {
@@ -244,7 +248,6 @@ export default function Expenses({income,expenses,theme}){
 		return <Menu anchorEl={anchorEl} open={open} onClose={handleClose} anchorOrigin={{vertical: 'top',horizontal: 'left',}}
 					transformOrigin={{vertical: 'top',horizontal: 'left',}}>
 					<MenuItem onClick={()=>{handleClickChange(menuExpenses,menu);handleClose();}}>Change Amount type</MenuItem>
-					<MenuItem onClick={handleClose}>Details</MenuItem>
 					<MenuItem onClick={()=>{handleClickDelete(menuExpenses,menu);handleClose();}} color="secondary">Delete</MenuItem>
 				</Menu>
 	}
@@ -321,7 +324,7 @@ export default function Expenses({income,expenses,theme}){
 	return (
 	<div className="income-page expense-page">
 		<div className="page">
-			<h1>Expenses</h1>
+			<h1>Expenses <i>${getTotal(expensesList).toLocaleString("en-US")}</i></h1>
 			<div className="head">
 				<Button variant="contained" color="primary" onClick={()=>{setForm(true)}}>Add Expense</Button>
 				<Button  startIcon={<FilterCenterFocus />} onClick={handleScanMenu} variant="text" color="primary">Scan Receipt</Button>
@@ -401,7 +404,7 @@ export default function Expenses({income,expenses,theme}){
 					</span>
 					<span className="label"></span>
 				</div>
-				{(expensesList).map((expenses,i)=>{
+				{sortByStatus(expensesList).map((expenses,i)=>{
 					return (
 							<Item expenses={expenses} i={i} key={i+""+expenses.date+""+expenses.name}
 							handleChange={handleChange} editExpChange={editExpChange} editExpAdd={editExpAdd} handleClick={handleClick}/>
@@ -410,7 +413,7 @@ export default function Expenses({income,expenses,theme}){
 			</div>
 			: ""}
 			<div className="end">
-				<Button size="medium" variant="contained" onClick={handleSubmit} disabled={expensesList.length === 0}>Done</Button>
+				<Button size="medium" variant="contained" onClick={handleUpdate} disabled={expensesList.length === 0}>Done</Button>
 			</div>
 		</div>
 		<input accept="image/*" className="hidden" id="cameraButton" type="file" capture="environment" onChange={(e)=>renderExpense(e.target)}/>

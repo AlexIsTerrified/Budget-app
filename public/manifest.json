@@ -1,6 +1,6 @@
 {
     "short_name": "Budgeting App",
-    "name": "Manage your finances like you give a shit.",
+    "name": "Manage your finances the right way.",
     "icons": [
       {
         "src": "logo.svg",
@@ -21,5 +21,5 @@
     "start_url": ".",
     "display": "standalone",
     "theme_color": "#000000",
-    "background_color": "#ffffff"
+    "background_color": "#1e013e"
   }

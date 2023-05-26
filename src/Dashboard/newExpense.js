@@ -43,7 +43,7 @@ export default function NewExpenses({income,expenses}){
 		if(id === "amount")expenses[i].amount = e.target.value
 		
 		setexpensesList(expenses)
-		setLength(expenses)
+		setLength(expenses.length)
 		handleSubmit()
 	}
 	
@@ -73,7 +73,6 @@ export default function NewExpenses({income,expenses}){
 	
 	const handleExpChange = (e,i) => {
 		const expense = newExpense
-		console.log(i)
 		if(e.target.id === "name")expense.amount[i].name = e.target.value
 		if(e.target.id === "amount")expense.amount[i].amount = e.target.value
 		
@@ -260,8 +259,12 @@ export default function NewExpenses({income,expenses}){
 	
 	return (
 	<div className="income expense">
+		<div className="head">
+			<h1><b>Now add your months current expenses.</b></h1>
+		</div>
 		<div className="page">
 			<h2>Add at least one Expense</h2>
+			<p className="desc">The priority field states how important each expenses is, high being a completely necessary expenses while low being a non-necessary luxury.</p>
 			<div className="form">
 				<div className="top">
 					<div className="row">

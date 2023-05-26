@@ -161,7 +161,7 @@ export default function Dashboard({income,expenses,theme,history}){
 				<span className="column">{item.priority == 0 ? "Low" : item.priority == 1 ? "Medium" : "High"}</span>
 				<span className="column">
 					<div className="progress" style={{width:progress+"%"}}>
-					<span>{percentage}%</span><span>(${amount})</span>
+					<span>{percentage}%</span><span>(${Number(amount).toLocaleString("en-US")})</span>
 					</div>
 				</span>
 			</div>
@@ -177,7 +177,7 @@ export default function Dashboard({income,expenses,theme,history}){
 				<span className="column">{item.name}</span>
 				<span className="column">
 				<div className="progress" style={{width:percentage+"%"}}>
-					<span>{percentage}%</span><span>(${amount})</span>
+					<span>{percentage}%</span><span>(${Number(amount).toLocaleString("en-US")})</span>
 					</div>
 				</span>
 			</div>
@@ -218,7 +218,7 @@ export default function Dashboard({income,expenses,theme,history}){
 				<Link to="/income" className="income">
 					<div className="row even">
 						<span className="label">Income</span>
-						<span className="label">% of income</span>
+						<span className="label">% of income  <i>(${getTotal(income).toLocaleString("en-US")})</i></span>
 					</div>
 					{sortByStatus(sortByAmount(income)).map((item,i)=>{
 						return (incomeItem(item,i))
@@ -228,7 +228,7 @@ export default function Dashboard({income,expenses,theme,history}){
 					<div className="row even">
 						<span className="label">Expenses</span>
 						<span className="label">Priority</span>
-						<span className="label">% of income</span>
+						<span className="label">% of expenses <i>(${getTotal(expenses).toLocaleString("en-US")})</i></span>
 					</div>
 					{sortByStatus(sortByAmount(expenses)).map((item,i)=>{
 						return (expensesItem(item,i))

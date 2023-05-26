@@ -35,7 +35,7 @@ a{text-decoration:none;color:inherit}
 	position:sticky;top:0;z-index:5;display:flex;flex-direction:column;justify-content:space-between;transition:.3s;overflow:hidden}
 .nav .start{display:flex;flex-direction:column;padding:0 10px;flex:1;max-width: 100%;align-items:start}
 .nav .start .lighted {content: "";width: 180px;height: 40px;background: #2285ffaa;border-radius: var(--border-radius);position: absolute;
-transition:.3s;visibility: hidden;transform:translateX(-200px)}
+transition:cubic-bezier(0.18, 0.89, 0.32, 1.11) .3s;;visibility: hidden;transform:translateX(-200px)}
 .nav .home .lighted{transform: translateY(5px);visibility: visible;}
 .nav .income .lighted{transform: translateY(55px);visibility: visible;}
 .nav .expenses .lighted{transform: translateY(105px);visibility: visible;}
@@ -45,18 +45,24 @@ transition:.3s;visibility: hidden;transform:translateX(-200px)}
 .nav .start .item:hover{scale:1.02;opacity:1}
 .nav .start .item svg{font-size:30px}
 .nav .start .item b{padding:5px;font-size:.8rem}
+.nav .start .item .badge{align-items: center;background: var(--outdated);border-radius: 10px;color: #444;display: flex;font-size: 12px;
+    height: 12px;justify-content: center;letter-spacing: 1px;min-width: 12px;opacity: .96;padding: 4px;
+	position: absolute;-webkit-transform: translate(calc(170px - 100%));transform: translate(calc(170px - 100%));}
+.nav .start .item .error{background: var(--error); color: #ccc}
 .MuiTooltip-popper{display:none !important;}
 .MuiTooltip-tooltip{font-size:.8rem !important}
 .MuiPaper-root{border-radius:var(--border-radius) !important}
 
 .main{flex:1;container-type: inline-size;display:flex;flex-direction:column;align-items:center;margin-bottom: 100px;} 
-.main h1{display: flex;justify-content: center;align-items: center;height:100px;}
+.main h1{display: flex;justify-content: center;align-items: center;height:100px;flex-direction: column;text-align:Center}
+.main h1 b{font-size:18px;font-weight: 400;padding:10px 0}
+.main h1 i{font-weight:200;margin:5px;font-size:16px;padding: 5px;border: 1px solid #aaa;color: #aaa; border-width: 1px 0px;}
 .main h3{font-weight:400;background: var(--accent-color);padding: 14px;width: fit-content;border-radius: var(--border-radius);display:flex;
 flex-wrap:wrap;margin:10px 0;align-items: center;}
 .main h3 i{font-weight:400;margin:0 5px;font-size: smaller;padding: 5px;border: 1px solid var(--color);border-width: 0 0 1px;}
-.main .user-status{top:0;padding:10px 20px 10px;display:flex;justify-content: space-between;box-sizing: border-box;width:100%}
-.main .user-status .top-logo{margin:10px 0;display:flex;justify-content: center;align-items: center;}
-.main .user-status .top-logo img{width:40px; height:40px;margin-right: 10px}
+.main .user-status{top:0;padding:10px 20px 10px;display:flex;justify-content: space-between;box-sizing: border-box;width:100%;z-index:3}
+.main .user-status .top-logo{display:flex;justify-content: center;align-items: center;}
+.main .user-status .top-logo img{width:32px; height:32px;margin-right: 8px}
 
 .dashboard .success svg{margin-right:4px;color:var(--success)}
 .dashboard .outdated svg{margin-right:4px;color:var(--outdated)}
@@ -112,12 +118,14 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 .dashboard .lists .expenses .row{grid-template-columns:100px 100px 1fr;}
 
 .start-form{width:100%;height:100vh;padding:20px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;
-	transition:.3s}
-.next{transform:translateY(-100%);container-type: inline-size;}
-.start-form .income{width:100%;min-height:100vh;display:flex;flex-direction:columns;justify-content:Center;align-items:center;}
+	transition:.3s;transform:translateY(-120px)}
+.next{transform:translateY(calc(-100% - 120px));container-type: inline-size;}
+.start-form .income{width:100%;min-height:100vh;display:flex;flex-direction:column;justify-content:Center;align-items:center;}
 .start-form .income .page{max-width:800px;width:100%;min-height:360px;background:var(--box-color);box-shadow:1px 1px 10px #0003;
 	border-radius:var(--border-radius);padding:28px;box-sizing:border-box;display:flex;flex-direction:column;max-height:100%;
 	overflow:overlay}
+.start-form .income .page h2{padding-left:30px;margin:0}
+.start-form .income .page .desc{padding:0 30px}
 .start-form .income .form{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px;
 	box-sizing:border-box;flex-wrap:wrap}
 .start-form .income .form .top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;width:100%;}
@@ -172,6 +180,7 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 	background:var(--box-color);box-shadow:1px 1px 10px #0003;}
 .income-page .list .row{display:grid;grid-template-columns:1fr 1fr 1fr min-content;justify-content:space-between;flex-wrap:Wrap;
 	padding:5px 10px 5px;transition:.3s;overflow:hidden;}
+.income-page .list .outdated{border-left: 4px solid var(--outdated);}
 .income-page .list .error{border-left: 4px solid var(--error);}
 .expense-page .list .row{grid-template-columns:1fr 1fr 1fr 1fr 50px;}
 .expense-page .list .row{grid-template-columns:1fr 1fr 1fr 1fr min-content;}
@@ -197,13 +206,17 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 .income-page .end{display:flex;justify-content:end;padding-top:20px}
 
 .user-preference{width:100%;padding:10px 20px;max-width:960px;box-sizing:border-box;display: flex;flex-direction: column;align-items: center;}
-.user-preference .box{padding:10px;border-radius:var(--border-radius);background:var(--box-color);max-width:400px;width:100%;
+.user-preference .box{display:flex;flex-direction:column;padding:10px;border-radius:var(--border-radius);background:var(--box-color);max-width:400px;width:100%;
 	box-shadow:1px 1px 10px #0003;margin-bottom:20px}
+.user-preference .box b{padding:12px 0}
+.user-preference .row{flex-direction:row;justify-content: center;align-items: center;}
+.user-preference .box .MuiButtonBase-root{width: fit-content;}
 .user-preference .head{padding:10px 20px;box-sizing:border-box;width: 100%;}
 
 .login{display:flex;flex-direction:column;width:100%;max-width:400px;padding:10px;box-sizing: border-box;align-items:Center}
 .login .box{display:flex;flex-direction:column;gap:30px;padding:20px;background:var(--box-color);border-radius: var(--border-radius);
 	box-shadow:1px 1px 10px #0003;width:100%;box-sizing:border-box}
+.login .box .error{background: var(--error);font-size: 14px;width: fit-content;padding: 5px;border-radius: var(--border-radius);}
 .login .box a{color:#0063cc;transition: .3s;}
 .login .box a:hover{color:#2285ff}
 
@@ -271,6 +284,7 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 	.nav .start{padding:0 10px}
 	.nav .start .lighted{width:40px}
 	.nav .start .item b{display:none}
+	.nav .start .item .badge{transform: translate(calc(38px - 100%),-12px);}
 	.MuiTooltip-popper{display:initial !important}
 }
 
@@ -287,7 +301,10 @@ flex-wrap:wrap;margin:10px 0;align-items: center;}
 	.nav .start .item{justify-content:center}
 	.MuiTooltip-popper{}
 
+	.main h1{font-size:20px}
+	.main h1 b{font-size: 16px;}
 	.main .user-status{position:initial;}
+
 	.dashboard .lists .income .row .label{padding:10px;}
 	.dashboard .lists .income .row .column{padding:5px 10px;}
 	

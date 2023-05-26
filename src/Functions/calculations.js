@@ -160,6 +160,17 @@ export function sortByStatus(data,d=false){
 
 }
 
+export function statusCheck(data){
+	let errors = 0
+	let outdated = 0
+
+	data.forEach(item =>{
+		if(item.error)errors++
+		if(item.outdated)outdated++
+	})
+	return {errors:errors,outdated:outdated}
+}
+
 export function sortByName(data, d=false){
 	return data.sort((a,b)=>{
 		if(d){

@@ -12,7 +12,7 @@ export default function UserStatus({user}){
             <div className="user-status">
                 <div className="top-logo">
                     <img src={logo}/>
-                    <b>Bugeting App</b>
+                    <b>Budgeting App</b>
                 </div>
                 {user != null ?
                 <Button onClick={logout}>Logout</Button>

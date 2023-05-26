@@ -247,8 +247,12 @@ export default function NewIncome({income,expenses}){
 
 	return (
 	<div className="income">
+		<div className="head">
+			<h1>Welcome to The Budgeting App<b>To get started add your current months income.</b></h1>
+		</div>
 		<div className="page">
 			<h2>Add an income</h2>
+			<p className="desc">A fixed income / expense will repeat from month to month.</p>
 			<div className="form">
 				<div className="top">
 					<div className="row">

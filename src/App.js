@@ -10,9 +10,11 @@ import Expenses from './Expenses/Expenses'
 import User from './User/User'
 import Login from './User/Login'
 import Register from './User/Register'
+import ChangePassword from './User/ChangePassword'
+import ResetPassword from './User/ResetPassword'
 import UserStatus from './UserStatus'
 import {fetchTempData,setTempData,setTempHistory,fetchData,editData,darkMode,auth,checkForChanges,updateForMonth} from './Functions/functions'
-import { getStatus} from './Functions/calculations';
+import { getStatus,statusCheck} from './Functions/calculations';
 
 function App() {
 	const [income, setIncome] = useState([]);
@@ -24,7 +26,6 @@ function App() {
 	const [loc,setLoc] = useState(location.pathname)
 	const [loaded,setLoaded] = useState(false)
 	const [initLoaded,setInitLoaded] = useState(false)
-
 
 	const darkTheme = createTheme({
 		  palette: {
@@ -74,7 +75,6 @@ function App() {
 			setTempHistory(updateInfo.history)
 			console.log("initializing data",updateInfo)
 			setInitLoaded(true)
-			
 	}
 
 	useEffect(()=>{
@@ -98,6 +98,7 @@ function App() {
 
 	useEffect(()=>{
 		if(user !== false){
+			console.log("waiting")
 			initData()
 		}
 	},[user])
@@ -119,18 +120,23 @@ function App() {
 
   return (
 			<ThemeProvider theme={darkTheme}>
-				<Nav/>
+				<Nav income={statusCheck(income)} expenses={statusCheck(expenses)} />
 				<div className="main">
 					<UserStatus user={user}/>
 					<Routes>
 						<Route path="/" element={<Dashboard income={income} expenses={expenses} theme={darkmode} history={history}/>}/>
 						<Route path="/income" element={<Income income={income} expenses={expenses} theme={darkmode} />}/>
 						<Route path="/expenses" element={<Expenses income={income} expenses={expenses}/>}/>
-						<Route path="/user" element={<User />}/>
+						<Route path="/user" element={<User user={user} />}/>
 						{user == null ? <>
 							<Route path="/login" element={<Login/>}/>
 							<Route path="/register" element={<Register/>}/>
-						</> : null}
+							<Route path="/user/reset-password" element={<ResetPassword />}/>
+							
+						</> : 
+						<>
+							<Route path="/user/change-password" element={<ChangePassword user={user}  />}/>
+						</>}
 						
 					</Routes>
 				</div>

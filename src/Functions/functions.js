@@ -1,6 +1,7 @@
 import {updateDate,correctStringErrors,historyUpdate,getTotal} from './calculations'
 import { initializeApp } from "firebase/app";
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut } from "firebase/auth";
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut, reauthenticateWithCredential,
+	 EmailAuthProvider,updatePassword,sendPasswordResetEmail} from "firebase/auth";
 import { getDoc,doc, setDoc,getFirestore,enableIndexedDbPersistence } from "firebase/firestore"; 
 
 const firebaseConfig = {
@@ -30,8 +31,8 @@ enableIndexedDbPersistence(db)
       }
   });
 
-export async function createUserWithEmail(email,password){
-	await createUserWithEmailAndPassword(auth, email, password)
+export function createUserWithEmail(email,password){
+	return createUserWithEmailAndPassword(auth, email, password)
 		.then(async (userCredential) => {
 			document.getElementById("loader").click()
 			const user = await userCredential.user;
@@ -39,15 +40,23 @@ export async function createUserWithEmail(email,password){
 			console.log({set:true,message:user})
 			let date = new Date()
 			date = date.valueOf()
+			const nhistory = fetchTempData().history
 			await setDoc(doc(db,'users',user.uid),{
 				email:user.email,
 				income: fetchTempData().income || [],
 				expenses: fetchTempData().expenses || [],
-				date:date
+				date:date,
+				history:fetchTempData().history.length > 0  ? fetchTempData().history : []
+			}).then(()=>{
+				localStorage.setItem("local_expenses",[]);
+				localStorage.setItem("local_income",[]);
+				localStorage.setItem("local_date",0);
+				localStorage.setItem("local_history",[]);
 			})
+			return {set:true,message:""}
 		})
 		.catch((error) => {
-			console.log({set:false,message:error})
+			return {set:false,message:error}
 		});
 }
 
@@ -62,9 +71,29 @@ export function loginUserWithEmail(email,password){
 		});
 }
 
-function createUserWithGoogle(){
-
+export function changePassword(user, pass, newPass){
+	return reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email,pass)).then(() => {
+		return updatePassword(user, newPass).then(() => {
+			return {set:true,message:""}
+		  }).catch((error) => {
+			console.log(error,2)
+			return {set:false,message:error}
+		  });
+	}).catch((error) => {
+	console.log(error,1)
+	return {set:false,message:error}
+	})
 }
+
+export function resetPassword(email){
+	return sendPasswordResetEmail(auth, email).then(() => {
+		return {set:true,message:""}
+  }).catch((error) => {
+    return {set:false,message:error}
+  });
+}
+
+
 
 export function logout(){
 	document.getElementById("loader").click()
@@ -108,9 +137,9 @@ function setOldData(income,expenses){
 }
 
 export function fetchTempData(){
-	const data = {income: JSON.parse(localStorage.getItem("temp_income")),
-	expenses: JSON.parse(localStorage.getItem("temp_expenses")),
-	history:JSON.parse(localStorage.getItem("temp_history"))}
+	const data = {income: JSON.parse(localStorage.getItem("temp_income") || []),
+	expenses: JSON.parse(localStorage.getItem("temp_expenses") || []),
+	history:JSON.parse(localStorage.getItem("temp_history") || [])}
 	return data
 }
 

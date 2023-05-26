@@ -3,7 +3,7 @@ import {TextField,InputAdornment,Switch,IconButton,Button,MenuItem,Menu,Dialog,D
 import {AddCircle,RemoveCircle,ExpandMore,ExpandLess,MoreVert,ArrowDropDown,ArrowDropUp} from '@mui/icons-material';
 import {useLocation} from 'react-router-dom'
 import {setTempData} from '../Functions/functions'
-import {getTotal,sortByName,sortByAmount,sortByFixed,sortByPriority}from '../Functions/calculations'
+import {getTotal,sortByName,sortByAmount,sortByFixed,sortByPriority,sortByStatus}from '../Functions/calculations'
 
 export default function Income({income,expenses,theme}){
 	const [incomeList,setIncomeList] = useState(income || [])
@@ -31,14 +31,14 @@ export default function Income({income,expenses,theme}){
 		}
 		setSort({type:type,d:newD})
 		if(type === "amount"){
-			setIncomeList(sortByAmount(incomeList,newD))
+			setIncomeList(sortByStatus(sortByAmount(incomeList,newD)))
 		}
 		else if(type === "priority"){
-			setIncomeList(sortByPriority(incomeList,newD))
+			setIncomeList(sortByStatus(sortByPriority(incomeList,newD)))
 		}else if(type === "name"){
-			setIncomeList(sortByName(incomeList,newD))
+			setIncomeList(sortByStatus(sortByName(incomeList,newD)))
 		}else if(type === "fixed"){
-			setIncomeList(sortByFixed(incomeList,newD))
+			setIncomeList(sortByStatus(sortByFixed(incomeList,newD)))
 		}
 		
 	}
@@ -196,7 +196,9 @@ export default function Income({income,expenses,theme}){
 		setLength(income[i].amount.length || 0)
 		handleSubmit()
 	}
-
+	const handleUpdate= () => {
+		document.getElementById("hidden").click()
+	}
 
 //UI code starts from here
 	const Expanded = (amount,i) => {
@@ -229,7 +231,6 @@ export default function Income({income,expenses,theme}){
 		return <Menu anchorEl={anchorEl} open={open} onClose={handleClose} anchorOrigin={{vertical: 'top',horizontal: 'left',}}
 					transformOrigin={{vertical: 'top',horizontal: 'left',}}>
 					<MenuItem onClick={()=>{handleClickChange(menuIncome,menu);handleClose();}}>Change Amount type</MenuItem>
-					<MenuItem onClick={handleClose}>Details</MenuItem>
 					<MenuItem onClick={()=>{handleClickDelete(menuIncome,menu);handleClose();}} color="secondary">Delete</MenuItem>
 				</Menu>
 	}
@@ -276,7 +277,7 @@ export default function Income({income,expenses,theme}){
 	return (
 	<div className="income-page">
 		<div className="page">
-			<h1>Income</h1>
+			<h1>Income <i>${getTotal(incomeList).toLocaleString("en-US")}</i></h1>
 			<div className="head">
 			<Button variant="contained" color="primary" onClick={()=>{setForm(true)}}>ADD INCOME</Button>
 			</div>
@@ -339,7 +340,7 @@ export default function Income({income,expenses,theme}){
 					</span>
 					<span className="label"></span>
 				</div>
-				{incomeList.map((income,i)=>{
+				{sortByStatus(incomeList).map((income,i)=>{
 					return (
 						<Item income={income} i={i} key={i+""+income.date+""+income.name}
 						handleChange={handleChange} editExpChange={editExpChange} editExpAdd={editExpAdd} handleClick={handleClick}/>
@@ -348,7 +349,7 @@ export default function Income({income,expenses,theme}){
 			</div>
 			: ""}
 			<div className="end">
-				<Button size="medium" variant="contained" onClick={handleSubmit} disabled={incomeList.length === 0}>Done</Button>
+				<Button size="medium" variant="contained" onClick={handleUpdate} disabled={incomeList.length === 0}>Done</Button>
 			</div>
 		</div>
 		<ItemMenu/>
