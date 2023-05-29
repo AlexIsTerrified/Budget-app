@@ -66,8 +66,8 @@ export function getStatus(income,expenses){
 			newItem.error = true
 			if(typeof item.amount === 'object' && incomeTotal > total - (typeof item.amount !== 'object' ? Number(item.amount) : getTotal(item.amount))){
 				newItem.suberror = true
-				newItem.amount = newItem.amount.map((subItem,i)=>{
-					if(incomeTotal <= total){
+				newItem.amount = sortByAmount(newItem.amount,true).map((subItem,i)=>{
+					if(incomeTotal < total){
 						subItem.error = true
 						if(i===newItem.amount.length-1){
 							newItem.suberror = false

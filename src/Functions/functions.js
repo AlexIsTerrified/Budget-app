@@ -93,8 +93,6 @@ export function resetPassword(email){
   });
 }
 
-
-
 export function logout(){
 	document.getElementById("loader").click()
 	signOut(auth).then(() => {
@@ -124,7 +122,6 @@ export function setDarkMode(d){
 	localStorage.setItem("darkMode",JSON.stringify(d))
 	document.getElementById("darkMode").click()
 }
-
 
 function fetchOldData(){
 	const data = JSON.parse(localStorage.getItem("temp_oldData"))
@@ -179,7 +176,9 @@ export function fetchData(){
 		if(expenses)expenses = correctStringErrors(expenses)
 		else expenses = []
 		if(date_modified){
+			console.log(date_modified)
 			date_modified = JSON.parse(date_modified)
+			console.log(date_modified)
 		}else{
 			let date = new Date()
 			date_modified = date.valueOf()
@@ -191,7 +190,7 @@ export function fetchData(){
 		}
 		//userData = {income:[...income],expenses:[...expenses],date_modified:date_modified}
 		setOldData(income,expenses)
-		return {income:income,expenses:expenses,date_modified:date_modified,history:history}
+		return {income:income,expenses:expenses,date:date_modified,history:history}
 	}
 }
 

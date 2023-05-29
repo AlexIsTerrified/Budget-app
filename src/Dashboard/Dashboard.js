@@ -195,7 +195,7 @@ export default function Dashboard({income,expenses,theme,history}){
 				</h3> : 
 				<h3 className="error">
 					<Error/>
-					 Your expenses currently exceed your income by <i>${(expensesTotal-incomeTotal).toFixed(2)} or <i>{(((expensesTotal-incomeTotal)/expensesTotal)*100).toFixed(1)}%</i></i>
+					 Your expenses currently exceed your income by <i>${(expensesTotal-incomeTotal).toFixed(2)}</i> or <i>{(((expensesTotal-incomeTotal)/expensesTotal)*100).toFixed(1)}%</i>
 				</h3>}
 				{ifOutdated(income) ? <h3 className="outdated"><Error/> One or more of your incomes are outdated</h3> : null}
 				{ifOutdated(expenses) ? <h3 className="outdated"><Error/> One or more of your expenses are outdated</h3> : null}

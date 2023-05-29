@@ -1,9 +1,7 @@
 import {useState,useEffect} from 'react'
 import {NavLink as Link,useLocation} from 'react-router-dom'
-import {Switch,FormControl, Tooltip,Zoom} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import {Tooltip,Zoom} from '@mui/material';
 import {AccountBalanceWallet,Receipt,Dashboard,ManageAccounts} from '@mui/icons-material';
-import {setDarkMode,darkMode} from './Functions/functions'
 export default function App({income,expenses}){
 	const [width,setWidth] = useState(window.innerWidth)
 	const [loc,setLoc] = useState("")
